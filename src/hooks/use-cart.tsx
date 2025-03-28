@@ -19,6 +19,7 @@ interface CartContextType {
   removeFromCart: (productId: number) => void;
   updateQuantity: (productId: number, quantity: number) => void;
   clearCart: () => void;
+  addItem: (product: any) => void; // Ajout de la méthode addItem pour compatibilité
 }
 
 // Create context
@@ -69,6 +70,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
   };
 
+  // Add addItem as an alias for addToCart for compatibility
+  const addItem = addToCart;
+
   // Remove product from cart
   const removeFromCart = (productId: number) => {
     setCart((prevCart) => {
@@ -116,6 +120,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         removeFromCart,
         updateQuantity,
         clearCart,
+        addItem, // Ajout de la méthode addItem au contexte
       }}
     >
       {children}
