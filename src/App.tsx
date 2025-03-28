@@ -9,6 +9,7 @@ import { CartProvider } from "@/hooks/use-cart";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import PharmaciesPage from "./pages/PharmaciesPage";
+import Register from "./pages/Register";
 
 // Create a client
 const queryClient = new QueryClient();
@@ -23,6 +24,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/pharmacies" element={<PharmaciesPage />} />
+            <Route path="/register" element={<Register />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
