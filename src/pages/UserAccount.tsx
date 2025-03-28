@@ -29,7 +29,9 @@ import {
   Store,
   ClipboardList,
   Users,
-  BarChart3
+  BarChart3,
+  Plus,    // Added missing import
+  Search   // Added missing import
 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { Badge } from '@/components/ui/badge';
