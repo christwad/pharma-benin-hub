@@ -7,7 +7,7 @@ const CTA = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="bg-benin-green py-16 text-white">
+    <section className="bg-gradient-to-r from-benin-green to-benin-green/90 py-16 text-white">
       <div className="container mx-auto px-4">
         <div className="mx-auto max-w-4xl text-center">
           <h2 className="mb-6 text-3xl font-bold tracking-tight sm:text-4xl">
@@ -20,7 +20,7 @@ const CTA = () => {
           <div className="flex flex-wrap justify-center gap-4">
             <Button
               size="lg"
-              variant="secondary"
+              className="bg-white text-benin-green hover:bg-white/90 transition-all hover:shadow-md"
               onClick={() => navigate("/login")}
             >
               Se connecter
@@ -28,7 +28,7 @@ const CTA = () => {
             <Button
               size="lg"
               variant="outline"
-              className="border-white text-white hover:bg-white hover:text-benin-green"
+              className="border-white text-white hover:bg-white/10 transition-all hover:shadow-md"
               onClick={() => navigate("/register")}
             >
               Créer un compte
@@ -36,7 +36,7 @@ const CTA = () => {
             <Button
               size="lg"
               variant="outline"
-              className="border-white text-white hover:bg-white hover:text-benin-green"
+              className="border-white text-white hover:bg-white/10 transition-all hover:shadow-md"
               onClick={() => navigate("/pharmacy-signup")}
             >
               Inscrire ma pharmacie

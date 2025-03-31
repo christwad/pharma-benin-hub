@@ -110,41 +110,41 @@ const Login = () => {
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 py-12 bg-gradient-to-b from-medical-light/30 to-transparent rounded-lg">
         <div className="max-w-md mx-auto">
           <div className="text-center mb-6">
-            <h1 className="text-3xl font-bold text-gray-900">Connexion</h1>
-            <p className="text-gray-600 mt-2">
+            <h1 className="text-3xl font-bold text-benin-green mb-2">Connexion</h1>
+            <p className="text-gray-600">
               Connectez-vous à votre compte PharmaBenin
             </p>
           </div>
 
           <Tabs defaultValue="client" className="w-full" value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid grid-cols-2 w-full mb-8">
-              <TabsTrigger value="client" className="flex items-center">
+            <TabsList className="grid grid-cols-2 w-full mb-8 bg-gray-100 p-1 rounded-lg">
+              <TabsTrigger value="client" className="flex items-center data-[state=active]:bg-white data-[state=active]:text-benin-green data-[state=active]:shadow-md rounded-md">
                 <User className="h-4 w-4 mr-2" />
                 Client
               </TabsTrigger>
-              <TabsTrigger value="pharmacy" className="flex items-center">
+              <TabsTrigger value="pharmacy" className="flex items-center data-[state=active]:bg-white data-[state=active]:text-benin-green data-[state=active]:shadow-md rounded-md">
                 <Landmark className="h-4 w-4 mr-2" />
                 Pharmacie
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="client">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Connexion Client</CardTitle>
+              <Card className="border-benin-green/20 shadow-lg">
+                <CardHeader className="bg-gradient-to-r from-benin-green/10 to-medical-medium/10 rounded-t-lg">
+                  <CardTitle className="text-benin-green">Connexion Client</CardTitle>
                   <CardDescription>
                     Accédez à votre compte client pour commander vos médicaments
                   </CardDescription>
                 </CardHeader>
                 <form onSubmit={handleClientSubmit}>
-                  <CardContent className="space-y-4">
+                  <CardContent className="space-y-4 pt-6">
                     <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
+                      <Label htmlFor="email" className="text-gray-700">Email</Label>
                       <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                        <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-benin-green" />
                         <Input
                           id="email"
                           name="email"
@@ -152,7 +152,7 @@ const Login = () => {
                           value={clientForm.email}
                           onChange={handleClientInputChange}
                           placeholder="votre.email@example.com"
-                          className="pl-10"
+                          className="pl-10 border-benin-green/30 focus:border-benin-green focus:ring-benin-green/20"
                           required
                         />
                       </div>
@@ -160,23 +160,23 @@ const Login = () => {
 
                     <div className="space-y-2">
                       <div className="flex justify-between">
-                        <Label htmlFor="password">Mot de passe</Label>
+                        <Label htmlFor="password" className="text-gray-700">Mot de passe</Label>
                         <Link
                           to="/forgot-password"
-                          className="text-xs text-blue-600 hover:underline"
+                          className="text-xs text-benin-green hover:underline"
                         >
                           Mot de passe oublié?
                         </Link>
                       </div>
                       <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                        <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-benin-green" />
                         <Input
                           id="password"
                           name="password"
                           type="password"
                           value={clientForm.password}
                           onChange={handleClientInputChange}
-                          className="pl-10"
+                          className="pl-10 border-benin-green/30 focus:border-benin-green focus:ring-benin-green/20"
                           required
                         />
                       </div>
@@ -189,14 +189,14 @@ const Login = () => {
                         name="rememberMe"
                         checked={clientForm.rememberMe}
                         onChange={handleClientInputChange}
-                        className="h-4 w-4"
+                        className="h-4 w-4 rounded border-benin-green/30 text-benin-green focus:ring-benin-green/20"
                       />
-                      <Label htmlFor="rememberMe" className="text-sm">
+                      <Label htmlFor="rememberMe" className="text-sm text-gray-600">
                         Se souvenir de moi
                       </Label>
                     </div>
                   </CardContent>
-                  <CardFooter className="flex flex-col space-y-4">
+                  <CardFooter className="flex flex-col space-y-4 bg-gray-50 rounded-b-lg pt-4">
                     <Button
                       type="submit"
                       className="w-full bg-benin-green hover:bg-benin-green/90"
@@ -207,7 +207,7 @@ const Login = () => {
                     
                     <div className="text-center text-sm">
                       Vous n'avez pas de compte?{" "}
-                      <Link to="/register" className="text-blue-600 hover:underline">
+                      <Link to="/register" className="text-benin-green font-medium hover:underline">
                         S'inscrire
                       </Link>
                     </div>
@@ -217,19 +217,19 @@ const Login = () => {
             </TabsContent>
 
             <TabsContent value="pharmacy">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Connexion Pharmacie</CardTitle>
+              <Card className="border-benin-green/20 shadow-lg">
+                <CardHeader className="bg-gradient-to-r from-benin-green/10 to-medical-medium/10 rounded-t-lg">
+                  <CardTitle className="text-benin-green">Connexion Pharmacie</CardTitle>
                   <CardDescription>
                     Accédez à votre espace pharmacie pour gérer vos produits
                   </CardDescription>
                 </CardHeader>
                 <form onSubmit={handlePharmacySubmit}>
-                  <CardContent className="space-y-4">
+                  <CardContent className="space-y-4 pt-6">
                     <div className="space-y-2">
-                      <Label htmlFor="pharmacy-email">Email</Label>
+                      <Label htmlFor="pharmacy-email" className="text-gray-700">Email</Label>
                       <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                        <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-benin-green" />
                         <Input
                           id="pharmacy-email"
                           name="email"
@@ -237,7 +237,7 @@ const Login = () => {
                           value={pharmacyForm.email}
                           onChange={handlePharmacyInputChange}
                           placeholder="pharmacie@example.com"
-                          className="pl-10"
+                          className="pl-10 border-benin-green/30 focus:border-benin-green focus:ring-benin-green/20"
                           required
                         />
                       </div>
@@ -245,23 +245,23 @@ const Login = () => {
 
                     <div className="space-y-2">
                       <div className="flex justify-between">
-                        <Label htmlFor="pharmacy-password">Mot de passe</Label>
+                        <Label htmlFor="pharmacy-password" className="text-gray-700">Mot de passe</Label>
                         <Link
                           to="/forgot-password"
-                          className="text-xs text-blue-600 hover:underline"
+                          className="text-xs text-benin-green hover:underline"
                         >
                           Mot de passe oublié?
                         </Link>
                       </div>
                       <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                        <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-benin-green" />
                         <Input
                           id="pharmacy-password"
                           name="password"
                           type="password"
                           value={pharmacyForm.password}
                           onChange={handlePharmacyInputChange}
-                          className="pl-10"
+                          className="pl-10 border-benin-green/30 focus:border-benin-green focus:ring-benin-green/20"
                           required
                         />
                       </div>
@@ -274,14 +274,14 @@ const Login = () => {
                         name="rememberMe"
                         checked={pharmacyForm.rememberMe}
                         onChange={handlePharmacyInputChange}
-                        className="h-4 w-4"
+                        className="h-4 w-4 rounded border-benin-green/30 text-benin-green focus:ring-benin-green/20"
                       />
-                      <Label htmlFor="pharmacy-rememberMe" className="text-sm">
+                      <Label htmlFor="pharmacy-rememberMe" className="text-sm text-gray-600">
                         Se souvenir de moi
                       </Label>
                     </div>
                   </CardContent>
-                  <CardFooter className="flex flex-col space-y-4">
+                  <CardFooter className="flex flex-col space-y-4 bg-gray-50 rounded-b-lg pt-4">
                     <Button
                       type="submit"
                       className="w-full bg-benin-green hover:bg-benin-green/90"
@@ -292,7 +292,7 @@ const Login = () => {
                     
                     <div className="text-center text-sm">
                       Pas encore partenaire?{" "}
-                      <Link to="/pharmacy-register" className="text-blue-600 hover:underline">
+                      <Link to="/pharmacy-register" className="text-benin-green font-medium hover:underline">
                         Devenir partenaire
                       </Link>
                     </div>
@@ -304,11 +304,11 @@ const Login = () => {
 
           <div className="mt-8 text-center text-sm text-gray-500">
             En vous connectant, vous acceptez nos{" "}
-            <Link to="#" className="text-blue-600 hover:underline">
+            <Link to="#" className="text-benin-green hover:underline">
               conditions d'utilisation
             </Link>{" "}
             et notre{" "}
-            <Link to="#" className="text-blue-600 hover:underline">
+            <Link to="#" className="text-benin-green hover:underline">
               politique de confidentialité
             </Link>
             .
