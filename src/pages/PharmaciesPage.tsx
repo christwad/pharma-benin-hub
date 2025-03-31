@@ -1,163 +1,313 @@
 
-import React from "react";
+import React, { useState } from "react";
 import Layout from "@/components/layout/Layout";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { MapPin, Phone, Clock, Star } from "lucide-react";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Search, MapPin, Clock, Phone, Star, SlidersHorizontal } from "lucide-react";
+import { Link } from "react-router-dom";
 
-const pharmacies = [
-  {
-    id: 1,
-    name: "Pharmacie Centrale",
-    address: "Avenue Jean Paul II, Cotonou",
-    phone: "+229 21 38 99 99",
-    rating: 4.8,
-    image: "/placeholder.svg",
-    isOpen: true,
-    distance: "1.2 km",
-    hours: "Lun-Sam: 8h-22h, Dim: 9h-20h"
-  },
-  {
-    id: 2,
-    name: "Pharmacie du Port",
-    address: "Boulevard de la Marina, Cotonou",
-    phone: "+229 21 31 53 53",
-    rating: 4.5,
-    image: "/placeholder.svg",
-    isOpen: true,
-    distance: "2.4 km",
-    hours: "Lun-Sam: 8h-22h, Dim: 9h-20h"
-  },
-  {
-    id: 3,
-    name: "Pharmacie Les Palmiers",
-    address: "Avenue Steinmetz, Cotonou",
-    phone: "+229 21 31 20 22",
-    rating: 4.7,
-    image: "/placeholder.svg",
-    isOpen: false,
-    distance: "3.1 km",
-    hours: "Lun-Sam: 8h-20h, Dim: 9h-18h"
-  },
-  {
-    id: 4,
-    name: "Pharmacie Zongo",
-    address: "Carrefour Zongo, Cotonou",
-    phone: "+229 21 31 34 34",
-    rating: 4.4,
-    image: "/placeholder.svg",
-    isOpen: true,
-    distance: "3.8 km",
-    hours: "Lun-Sam: 8h-21h, Dim: 9h-19h"
-  },
-  {
-    id: 5,
-    name: "Pharmacie Saint Jean",
-    address: "Rue Saint Jean, Cotonou",
-    phone: "+229 21 30 14 84",
-    rating: 4.3,
-    image: "/placeholder.svg",
-    isOpen: true,
-    distance: "4.2 km",
-    hours: "Lun-Sam: 8h-22h, Dim: 9h-20h"
-  },
-  {
-    id: 6,
-    name: "Pharmacie Haie Vive",
-    address: "Haie Vive, Cotonou",
-    phone: "+229 21 32 36 56",
-    rating: 4.9,
-    image: "/placeholder.svg",
-    isOpen: true,
-    distance: "5.0 km",
-    hours: "Lun-Dim: 24h/24"
-  },
-  {
-    id: 7,
-    name: "Pharmacie Akpakpa",
-    address: "Akpakpa, Cotonou",
-    phone: "+229 21 33 13 57",
-    rating: 4.6,
-    image: "/placeholder.svg",
-    isOpen: false,
-    distance: "6.1 km",
-    hours: "Lun-Sam: 8h-20h, Dim: Fermé"
-  },
-  {
-    id: 8,
-    name: "Pharmacie Gbégamey",
-    address: "Gbégamey, Cotonou",
-    phone: "+229 21 37 11 37",
-    rating: 4.2,
-    image: "/placeholder.svg",
-    isOpen: true,
-    distance: "3.5 km",
-    hours: "Lun-Sam: 8h-21h, Dim: 9h-18h"
-  }
-];
+// Types
+interface Pharmacy {
+  id: number;
+  name: string;
+  description: string;
+  address: string;
+  city: string;
+  phone: string;
+  image: string;
+  rating: number;
+  isOpen: boolean;
+  openingHours: string;
+  specialties: string[];
+}
 
 const PharmaciesPage = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [activeCity, setActiveCity] = useState("all");
+
+  // Sample data - in a real app, this would come from an API
+  const pharmacies: Pharmacy[] = [
+    {
+      id: 1,
+      name: "Pharmacie Centrale",
+      description: "Une pharmacie moderne offrant une large gamme de médicaments et de services pharmaceutiques.",
+      address: "123 Rue du Commerce",
+      city: "Cotonou",
+      phone: "+229 97 12 34 56",
+      image: "https://images.unsplash.com/photo-1471864190281-a93a3070b6de?q=80&w=2670&auto=format&fit=crop",
+      rating: 4.5,
+      isOpen: true,
+      openingHours: "08:00 - 20:00",
+      specialties: ["Médicaments génériques", "Orthopédie", "Homéopathie"]
+    },
+    {
+      id: 2,
+      name: "Pharmacie du Port",
+      description: "Située près du port, cette pharmacie offre des services rapides et efficaces avec des pharmaciens expérimentés.",
+      address: "45 Avenue du Port",
+      city: "Cotonou",
+      phone: "+229 97 23 45 67",
+      image: "https://images.unsplash.com/photo-1586015555751-63bb77f4322a?q=80&w=2670&auto=format&fit=crop",
+      rating: 4.2,
+      isOpen: true,
+      openingHours: "07:30 - 19:00",
+      specialties: ["Produits cosmétiques", "Nutrition", "Médicaments spécialisés"]
+    },
+    {
+      id: 3,
+      name: "Pharmacie Moderne",
+      description: "Une pharmacie de garde offrant des services 24h/24 pour les urgences médicales.",
+      address: "78 Boulevard Central",
+      city: "Parakou",
+      phone: "+229 97 34 56 78",
+      image: "https://images.unsplash.com/photo-1563453392212-326f5e854473?q=80&w=2670&auto=format&fit=crop",
+      rating: 4.8,
+      isOpen: false,
+      openingHours: "24h/24 (de garde)",
+      specialties: ["Service d'urgence", "Conseils personnalisés", "Livraison à domicile"]
+    },
+    {
+      id: 4,
+      name: "Pharmacie Saint Joseph",
+      description: "Pharmacie familiale offrant des soins attentionnés et des conseils personnalisés.",
+      address: "12 Rue de la Santé",
+      city: "Porto-Novo",
+      phone: "+229 97 45 67 89",
+      image: "https://images.unsplash.com/photo-1576602976047-174e57a47881?q=80&w=2670&auto=format&fit=crop",
+      rating: 4.0,
+      isOpen: true,
+      openingHours: "08:00 - 18:00",
+      specialties: ["Pédiatrie", "Gériatrie", "Phytothérapie"]
+    },
+    {
+      id: 5,
+      name: "Pharmacie des Collines",
+      description: "Pharmacie rurale offrant des services essentiels aux communautés éloignées.",
+      address: "5 Place du Marché",
+      city: "Dassa-Zoumé",
+      phone: "+229 97 56 78 90",
+      image: "https://images.unsplash.com/photo-1587854692152-cbe660dbde88?q=80&w=2836&auto=format&fit=crop",
+      rating: 4.6,
+      isOpen: true,
+      openingHours: "07:00 - 18:00",
+      specialties: ["Médecine traditionnelle", "Vaccinations", "Premiers secours"]
+    },
+    {
+      id: 6,
+      name: "Pharmacie Atlantique",
+      description: "Pharmacie moderne située près de la plage, spécialisée dans les soins dermatologiques.",
+      address: "34 Avenue de la Plage",
+      city: "Ouidah",
+      phone: "+229 97 67 89 01",
+      image: "https://images.unsplash.com/photo-1642391326524-72661a051e5f?q=80&w=2836&auto=format&fit=crop",
+      rating: 4.3,
+      isOpen: false,
+      openingHours: "08:30 - 19:30",
+      specialties: ["Dermatologie", "Protection solaire", "Soins de la peau"]
+    }
+  ];
+
+  // Get unique cities
+  const cities = ["all", ...new Set(pharmacies.map(pharmacy => pharmacy.city))];
+
+  // Filter pharmacies based on search term and active city
+  const filteredPharmacies = pharmacies.filter(pharmacy => {
+    const matchesSearch = pharmacy.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                         pharmacy.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCity = activeCity === "all" || pharmacy.city === activeCity;
+    return matchesSearch && matchesCity;
+  });
+
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
-            Pharmacies au Bénin
-          </h1>
-          <p className="mt-2 text-gray-600">
-            Trouvez les pharmacies près de chez vous
-          </p>
+        <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Pharmacies</h1>
+            <p className="text-gray-600">Trouvez les pharmacies près de chez vous</p>
+          </div>
+          
+          <div className="w-full md:w-auto flex gap-2">
+            <div className="relative flex-1 md:w-64">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+              <Input 
+                placeholder="Rechercher une pharmacie..." 
+                className="pl-10"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <Button variant="outline" className="flex items-center gap-2">
+              <SlidersHorizontal className="h-4 w-4" />
+              <span className="hidden sm:inline">Filtres</span>
+            </Button>
+          </div>
         </div>
-
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {pharmacies.map((pharmacy) => (
-            <Card key={pharmacy.id} className="card-hover overflow-hidden">
-              <div className="relative h-48 w-full overflow-hidden bg-gray-100">
-                <img
-                  src={pharmacy.image}
-                  alt={pharmacy.name}
-                  className="h-full w-full object-cover"
-                />
-                <div className="absolute bottom-2 left-2">
-                  {pharmacy.isOpen ? (
-                    <Badge className="bg-green-600">Ouvert</Badge>
-                  ) : (
-                    <Badge variant="secondary">Fermé</Badge>
-                  )}
+        
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Cities sidebar */}
+          <div className="lg:col-span-1">
+            <Card>
+              <CardHeader>
+                <CardTitle>Villes</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {cities.map((city) => (
+                    <Button
+                      key={city}
+                      variant={activeCity === city ? "default" : "ghost"}
+                      className={`w-full justify-start ${activeCity === city ? "bg-benin-green hover:bg-benin-green/90" : ""}`}
+                      onClick={() => setActiveCity(city)}
+                    >
+                      {city === "all" ? "Toutes les villes" : city}
+                    </Button>
+                  ))}
                 </div>
-                <div className="absolute right-2 top-2">
-                  <Badge className="flex items-center gap-1 bg-white text-gray-900">
-                    <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                    {pharmacy.rating}
-                  </Badge>
-                </div>
-              </div>
-              <CardContent className="p-4">
-                <h3 className="mb-2 text-lg font-semibold">{pharmacy.name}</h3>
-                <div className="space-y-2 text-sm text-gray-600">
-                  <div className="flex items-start gap-2">
-                    <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0 text-benin-green" />
-                    <span>{pharmacy.address}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Phone className="h-4 w-4 flex-shrink-0 text-benin-green" />
-                    <span>{pharmacy.phone}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 flex-shrink-0 text-benin-green" />
-                    <span>{pharmacy.hours}</span>
-                  </div>
-                </div>
-                <Button
-                  variant="default"
-                  className="mt-4 w-full"
-                >
-                  Voir détails
-                </Button>
               </CardContent>
             </Card>
-          ))}
+          </div>
+          
+          {/* Pharmacies grid/list */}
+          <div className="lg:col-span-3">
+            <Tabs defaultValue="grid" className="w-full">
+              <div className="flex justify-between items-center mb-4">
+                <p className="text-sm text-gray-500">
+                  {filteredPharmacies.length} pharmacies trouvées
+                </p>
+                <TabsList>
+                  <TabsTrigger value="grid">Grille</TabsTrigger>
+                  <TabsTrigger value="list">Liste</TabsTrigger>
+                </TabsList>
+              </div>
+              
+              <TabsContent value="grid" className="mt-0">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {filteredPharmacies.map((pharmacy) => (
+                    <Card key={pharmacy.id} className="overflow-hidden flex flex-col h-full">
+                      <div className="relative h-48 bg-gray-100">
+                        <img
+                          src={pharmacy.image}
+                          alt={pharmacy.name}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute top-2 right-2">
+                          <Badge variant={pharmacy.isOpen ? "success" : "secondary"}>
+                            {pharmacy.isOpen ? "Ouvert" : "Fermé"}
+                          </Badge>
+                        </div>
+                      </div>
+                      <CardHeader className="pb-2">
+                        <div className="flex justify-between items-start">
+                          <CardTitle className="text-xl">{pharmacy.name}</CardTitle>
+                          <div className="flex items-center">
+                            <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                            <span className="text-sm ml-1">{pharmacy.rating}</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center text-sm text-gray-500">
+                          <MapPin className="h-4 w-4 mr-1" />
+                          {pharmacy.city}
+                        </div>
+                      </CardHeader>
+                      <CardContent className="pb-2 pt-0 flex-grow">
+                        <p className="text-sm text-gray-700 line-clamp-2 mb-2">{pharmacy.description}</p>
+                        <div className="space-y-1 text-sm">
+                          <div className="flex items-center">
+                            <MapPin className="h-4 w-4 mr-2 text-gray-500" />
+                            <span>{pharmacy.address}</span>
+                          </div>
+                          <div className="flex items-center">
+                            <Clock className="h-4 w-4 mr-2 text-gray-500" />
+                            <span>{pharmacy.openingHours}</span>
+                          </div>
+                          <div className="flex items-center">
+                            <Phone className="h-4 w-4 mr-2 text-gray-500" />
+                            <span>{pharmacy.phone}</span>
+                          </div>
+                        </div>
+                      </CardContent>
+                      <CardFooter className="pt-2">
+                        <Button className="w-full bg-benin-green hover:bg-benin-green/90">
+                          Voir les médicaments
+                        </Button>
+                      </CardFooter>
+                    </Card>
+                  ))}
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="list" className="mt-0">
+                <div className="space-y-4">
+                  {filteredPharmacies.map((pharmacy) => (
+                    <Card key={pharmacy.id} className="overflow-hidden">
+                      <div className="flex flex-col sm:flex-row">
+                        <div className="relative h-48 sm:h-auto sm:w-48 bg-gray-100">
+                          <img
+                            src={pharmacy.image}
+                            alt={pharmacy.name}
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute top-2 right-2">
+                            <Badge variant={pharmacy.isOpen ? "success" : "secondary"}>
+                              {pharmacy.isOpen ? "Ouvert" : "Fermé"}
+                            </Badge>
+                          </div>
+                        </div>
+                        <div className="flex-1 flex flex-col">
+                          <CardHeader className="pb-2">
+                            <div className="flex justify-between items-start">
+                              <CardTitle>{pharmacy.name}</CardTitle>
+                              <div className="flex items-center">
+                                <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                                <span className="text-sm ml-1">{pharmacy.rating}</span>
+                              </div>
+                            </div>
+                            <div className="flex items-center text-sm text-gray-500">
+                              <MapPin className="h-4 w-4 mr-1" />
+                              {pharmacy.city}
+                            </div>
+                          </CardHeader>
+                          <CardContent className="pb-2 pt-0 flex-grow">
+                            <p className="text-sm text-gray-700 mb-2">{pharmacy.description}</p>
+                            <div className="space-y-1 text-sm">
+                              <div className="flex items-center">
+                                <MapPin className="h-4 w-4 mr-2 text-gray-500" />
+                                <span>{pharmacy.address}</span>
+                              </div>
+                              <div className="flex items-center">
+                                <Clock className="h-4 w-4 mr-2 text-gray-500" />
+                                <span>{pharmacy.openingHours}</span>
+                              </div>
+                              <div className="flex items-center">
+                                <Phone className="h-4 w-4 mr-2 text-gray-500" />
+                                <span>{pharmacy.phone}</span>
+                              </div>
+                            </div>
+                            <div className="flex flex-wrap gap-2 mt-2">
+                              {pharmacy.specialties.map((specialty, index) => (
+                                <Badge key={index} variant="outline">
+                                  {specialty}
+                                </Badge>
+                              ))}
+                            </div>
+                          </CardContent>
+                          <CardFooter className="pt-2">
+                            <Button className="w-full bg-benin-green hover:bg-benin-green/90">
+                              Voir les médicaments
+                            </Button>
+                          </CardFooter>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
         </div>
       </div>
     </Layout>

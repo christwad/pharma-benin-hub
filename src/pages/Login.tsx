@@ -1,174 +1,319 @@
 
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
+import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Mail, Lock, ArrowRight } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
-import Layout from "@/components/layout/Layout";
-
-// Définir le schéma de validation
-const formSchema = z.object({
-  email: z.string().email({
-    message: "Veuillez entrer une adresse email valide",
-  }),
-  password: z.string().min(1, {
-    message: "Veuillez entrer votre mot de passe",
-  }),
-});
+import { User, Landmark, Lock, Mail } from "lucide-react";
 
 const Login = () => {
-  const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("client");
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
+  // Client form state
+  const [clientForm, setClientForm] = useState({
+    email: "",
+    password: "",
+    rememberMe: false,
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  // Pharmacy form state
+  const [pharmacyForm, setPharmacyForm] = useState({
+    email: "",
+    password: "",
+    rememberMe: false,
+  });
+
+  const handleClientInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const { name, value, type, checked } = e.target;
+    setClientForm((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  const handlePharmacyInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const { name, value, type, checked } = e.target;
+    setPharmacyForm((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  const handleClientSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
     setIsLoading(true);
-    try {
-      // Simulation de connexion (à remplacer par un appel API réel plus tard)
-      console.log("Form values:", values);
-      
-      // Simule un délai d'authentification
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      toast({
-        title: "Connexion réussie!",
-        description: "Vous êtes maintenant connecté.",
-      });
-      
-      // Redirection vers la page d'accueil
-      navigate("/");
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Erreur de connexion",
-        description: "Email ou mot de passe incorrect.",
-      });
-      console.error("Login error:", error);
-    } finally {
+
+    // Simulate API call
+    setTimeout(() => {
       setIsLoading(false);
-    }
+      
+      // Demo login - in a real app, this would validate credentials with a backend
+      if (clientForm.email === "demo@example.com" && clientForm.password === "password") {
+        toast({
+          title: "Connexion réussie!",
+          description: "Bienvenue sur PharmaBenin.",
+        });
+        // Redirect to home or dashboard (in a real app)
+        // history.push("/account");
+      } else {
+        toast({
+          title: "Échec de la connexion",
+          description: "Email ou mot de passe incorrect.",
+          variant: "destructive",
+        });
+      }
+    }, 1500);
+  };
+
+  const handlePharmacySubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    // Simulate API call
+    setTimeout(() => {
+      setIsLoading(false);
+      
+      // Demo login - in a real app, this would validate credentials with a backend
+      if (pharmacyForm.email === "pharmacy@example.com" && pharmacyForm.password === "password") {
+        toast({
+          title: "Connexion réussie!",
+          description: "Bienvenue sur votre espace pharmacie.",
+        });
+        // Redirect to pharmacy dashboard (in a real app)
+        // history.push("/account");
+      } else {
+        toast({
+          title: "Échec de la connexion",
+          description: "Email ou mot de passe incorrect.",
+          variant: "destructive",
+        });
+      }
+    }, 1500);
   };
 
   return (
     <Layout>
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-benin-green/5 to-benin-yellow/5 p-4">
-        <Card className="w-full max-w-md shadow-lg border border-benin-green/10">
-          <CardHeader className="space-y-1">
-            <div className="w-full flex justify-center mb-4">
-              <div className="h-12 w-12 rounded-full bg-benin-green flex items-center justify-center">
-                <Lock className="h-6 w-6 text-white" />
-              </div>
-            </div>
-            <CardTitle className="text-2xl font-bold text-center text-gray-900">Connexion</CardTitle>
-            <CardDescription className="text-center text-gray-600">
-              Entrez vos identifiants pour accéder à votre compte
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                          <Input 
-                            placeholder="exemple@email.com" 
-                            type="email" 
-                            className="pl-10" 
-                            {...field} 
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Mot de passe</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                          <Input 
-                            placeholder="********" 
-                            type="password" 
-                            className="pl-10" 
-                            {...field} 
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <div className="flex justify-end">
-                  <Link to="/reset-password" className="text-sm text-benin-green hover:underline">
-                    Mot de passe oublié?
-                  </Link>
-                </div>
-                
-                <Button 
-                  type="submit" 
-                  className="w-full bg-benin-green hover:bg-benin-green/90"
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <span className="flex items-center justify-center">
-                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Connexion en cours...
-                    </span>
-                  ) : (
-                    <span className="flex items-center">
-                      Se connecter
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </span>
-                  )}
-                </Button>
-              </form>
-            </Form>
-          </CardContent>
-          <CardFooter className="flex flex-col space-y-4 border-t p-6">
-            <div className="text-center text-sm text-gray-600">
-              Vous n'avez pas de compte?{" "}
-              <Link to="/register" className="font-medium text-benin-green hover:underline">
-                Créer un compte
-              </Link>
-            </div>
-            <div className="text-center text-sm text-gray-600">
-              Vous êtes une pharmacie?{" "}
-              <Link to="/pharmacy-register" className="font-medium text-benin-green hover:underline">
-                Enregistrer votre pharmacie
-              </Link>
-            </div>
-          </CardFooter>
-        </Card>
+      <div className="container mx-auto px-4 py-12">
+        <div className="max-w-md mx-auto">
+          <div className="text-center mb-6">
+            <h1 className="text-3xl font-bold text-gray-900">Connexion</h1>
+            <p className="text-gray-600 mt-2">
+              Connectez-vous à votre compte PharmaBenin
+            </p>
+          </div>
+
+          <Tabs defaultValue="client" className="w-full" value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="grid grid-cols-2 w-full mb-8">
+              <TabsTrigger value="client" className="flex items-center">
+                <User className="h-4 w-4 mr-2" />
+                Client
+              </TabsTrigger>
+              <TabsTrigger value="pharmacy" className="flex items-center">
+                <Landmark className="h-4 w-4 mr-2" />
+                Pharmacie
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="client">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Connexion Client</CardTitle>
+                  <CardDescription>
+                    Accédez à votre compte client pour commander vos médicaments
+                  </CardDescription>
+                </CardHeader>
+                <form onSubmit={handleClientSubmit}>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email</Label>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                        <Input
+                          id="email"
+                          name="email"
+                          type="email"
+                          value={clientForm.email}
+                          onChange={handleClientInputChange}
+                          placeholder="votre.email@example.com"
+                          className="pl-10"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <Label htmlFor="password">Mot de passe</Label>
+                        <Link
+                          to="/forgot-password"
+                          className="text-xs text-blue-600 hover:underline"
+                        >
+                          Mot de passe oublié?
+                        </Link>
+                      </div>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                        <Input
+                          id="password"
+                          name="password"
+                          type="password"
+                          value={clientForm.password}
+                          onChange={handleClientInputChange}
+                          className="pl-10"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="rememberMe"
+                        name="rememberMe"
+                        checked={clientForm.rememberMe}
+                        onChange={handleClientInputChange}
+                        className="h-4 w-4"
+                      />
+                      <Label htmlFor="rememberMe" className="text-sm">
+                        Se souvenir de moi
+                      </Label>
+                    </div>
+                  </CardContent>
+                  <CardFooter className="flex flex-col space-y-4">
+                    <Button
+                      type="submit"
+                      className="w-full bg-benin-green hover:bg-benin-green/90"
+                      disabled={isLoading}
+                    >
+                      {isLoading ? "Connexion en cours..." : "Se connecter"}
+                    </Button>
+                    
+                    <div className="text-center text-sm">
+                      Vous n'avez pas de compte?{" "}
+                      <Link to="/register" className="text-blue-600 hover:underline">
+                        S'inscrire
+                      </Link>
+                    </div>
+                  </CardFooter>
+                </form>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="pharmacy">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Connexion Pharmacie</CardTitle>
+                  <CardDescription>
+                    Accédez à votre espace pharmacie pour gérer vos produits
+                  </CardDescription>
+                </CardHeader>
+                <form onSubmit={handlePharmacySubmit}>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="pharmacy-email">Email</Label>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                        <Input
+                          id="pharmacy-email"
+                          name="email"
+                          type="email"
+                          value={pharmacyForm.email}
+                          onChange={handlePharmacyInputChange}
+                          placeholder="pharmacie@example.com"
+                          className="pl-10"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <Label htmlFor="pharmacy-password">Mot de passe</Label>
+                        <Link
+                          to="/forgot-password"
+                          className="text-xs text-blue-600 hover:underline"
+                        >
+                          Mot de passe oublié?
+                        </Link>
+                      </div>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                        <Input
+                          id="pharmacy-password"
+                          name="password"
+                          type="password"
+                          value={pharmacyForm.password}
+                          onChange={handlePharmacyInputChange}
+                          className="pl-10"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="pharmacy-rememberMe"
+                        name="rememberMe"
+                        checked={pharmacyForm.rememberMe}
+                        onChange={handlePharmacyInputChange}
+                        className="h-4 w-4"
+                      />
+                      <Label htmlFor="pharmacy-rememberMe" className="text-sm">
+                        Se souvenir de moi
+                      </Label>
+                    </div>
+                  </CardContent>
+                  <CardFooter className="flex flex-col space-y-4">
+                    <Button
+                      type="submit"
+                      className="w-full bg-benin-green hover:bg-benin-green/90"
+                      disabled={isLoading}
+                    >
+                      {isLoading ? "Connexion en cours..." : "Se connecter"}
+                    </Button>
+                    
+                    <div className="text-center text-sm">
+                      Pas encore partenaire?{" "}
+                      <Link to="/pharmacy-register" className="text-blue-600 hover:underline">
+                        Devenir partenaire
+                      </Link>
+                    </div>
+                  </CardFooter>
+                </form>
+              </Card>
+            </TabsContent>
+          </Tabs>
+
+          <div className="mt-8 text-center text-sm text-gray-500">
+            En vous connectant, vous acceptez nos{" "}
+            <Link to="#" className="text-blue-600 hover:underline">
+              conditions d'utilisation
+            </Link>{" "}
+            et notre{" "}
+            <Link to="#" className="text-blue-600 hover:underline">
+              politique de confidentialité
+            </Link>
+            .
+          </div>
+        </div>
       </div>
     </Layout>
   );

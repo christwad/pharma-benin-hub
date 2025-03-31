@@ -1,225 +1,422 @@
 
-import React from "react";
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { User, Mail, Lock, ArrowRight } from "lucide-react";
+import { 
+  Card, 
+  CardContent, 
+  CardDescription, 
+  CardFooter, 
+  CardHeader, 
+  CardTitle 
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
-
-// Définir le schéma de validation
-const formSchema = z.object({
-  fullName: z.string().min(2, {
-    message: "Le nom doit contenir au moins 2 caractères",
-  }),
-  email: z.string().email({
-    message: "Veuillez entrer une adresse email valide",
-  }),
-  password: z.string().min(8, {
-    message: "Le mot de passe doit contenir au moins 8 caractères",
-  }),
-  confirmPassword: z.string()
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Les mots de passe ne correspondent pas",
-  path: ["confirmPassword"],
-});
+import { User, ShieldCheck, Landmark, ArrowRight } from "lucide-react";
 
 const Register = () => {
-  const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      fullName: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-    },
+  const [activeTab, setActiveTab] = useState("client");
+  
+  // Client form state
+  const [clientForm, setClientForm] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
   });
-
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    setIsLoading(true);
-    try {
-      // Simulation d'enregistrement (à remplacer par un appel API réel plus tard)
-      console.log("Form values:", values);
-      
-      // Simule un délai d'enregistrement
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+  
+  // Pharmacy form state
+  const [pharmacyForm, setPharmacyForm] = useState({
+    pharmacyName: "",
+    ownerName: "",
+    email: "",
+    phone: "",
+    address: "",
+    city: "",
+    password: "",
+    confirmPassword: "",
+    licenseNumber: "",
+  });
+  
+  const handleClientInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setClientForm(prev => ({ ...prev, [name]: value }));
+  };
+  
+  const handlePharmacyInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setPharmacyForm(prev => ({ ...prev, [name]: value }));
+  };
+  
+  const handleClientSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Simple validation
+    if (clientForm.password !== clientForm.confirmPassword) {
       toast({
-        title: "Compte créé avec succès!",
-        description: "Vous pouvez maintenant vous connecter.",
-      });
-      
-      // Redirection vers la page de connexion
-      // navigate("/login");
-    } catch (error) {
-      toast({
+        title: "Erreur",
+        description: "Les mots de passe ne correspondent pas",
         variant: "destructive",
-        title: "Erreur lors de l'inscription",
-        description: "Une erreur est survenue. Veuillez réessayer.",
       });
-      console.error("Registration error:", error);
-    } finally {
-      setIsLoading(false);
+      return;
     }
+    
+    setIsLoading(true);
+    
+    // Simulate API call
+    setTimeout(() => {
+      setIsLoading(false);
+      toast({
+        title: "Inscription réussie!",
+        description: "Votre compte a été créé avec succès. Vous pouvez maintenant vous connecter.",
+      });
+      
+      // Reset form
+      setClientForm({
+        fullName: "",
+        email: "",
+        phone: "",
+        password: "",
+        confirmPassword: "",
+      });
+      
+      // Redirect to login (in a real app)
+      // history.push("/login");
+    }, 1500);
+  };
+  
+  const handlePharmacySubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Simple validation
+    if (pharmacyForm.password !== pharmacyForm.confirmPassword) {
+      toast({
+        title: "Erreur",
+        description: "Les mots de passe ne correspondent pas",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setIsLoading(true);
+    
+    // Simulate API call
+    setTimeout(() => {
+      setIsLoading(false);
+      toast({
+        title: "Demande d'inscription reçue!",
+        description: "Votre demande a été soumise avec succès. Elle sera examinée par notre équipe dans les plus brefs délais.",
+      });
+      
+      // Reset form
+      setPharmacyForm({
+        pharmacyName: "",
+        ownerName: "",
+        email: "",
+        phone: "",
+        address: "",
+        city: "",
+        password: "",
+        confirmPassword: "",
+        licenseNumber: "",
+      });
+    }, 1500);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-benin-green/5 to-benin-yellow/5 p-4">
-      <Card className="w-full max-w-md shadow-lg border border-benin-green/10">
-        <CardHeader className="space-y-1">
-          <div className="w-full flex justify-center mb-4">
-            <div className="h-12 w-12 rounded-full bg-benin-green flex items-center justify-center">
-              <User className="h-6 w-6 text-white" />
-            </div>
+    <Layout>
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-6">
+            <h1 className="text-3xl font-bold text-gray-900">Créer un compte</h1>
+            <p className="text-gray-600 mt-2">
+              Rejoignez PharmaBenin et accédez à tous nos services
+            </p>
           </div>
-          <CardTitle className="text-2xl font-bold text-center text-gray-900">Créer un compte</CardTitle>
-          <CardDescription className="text-center text-gray-600">
-            Entrez vos informations pour vous inscrire
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="fullName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nom complet</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                        <Input 
-                          placeholder="John Doe" 
-                          className="pl-10" 
-                          {...field} 
+          
+          <Tabs defaultValue="client" className="w-full" value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="grid grid-cols-2 w-full max-w-md mx-auto mb-8">
+              <TabsTrigger value="client" className="flex items-center">
+                <User className="h-4 w-4 mr-2" />
+                Client
+              </TabsTrigger>
+              <TabsTrigger value="pharmacy" className="flex items-center">
+                <Landmark className="h-4 w-4 mr-2" />
+                Pharmacie
+              </TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="client">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Inscription Client</CardTitle>
+                  <CardDescription>
+                    Créez un compte client pour commander vos médicaments en ligne
+                  </CardDescription>
+                </CardHeader>
+                <form onSubmit={handleClientSubmit}>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="fullName">Nom complet</Label>
+                      <Input
+                        id="fullName"
+                        name="fullName"
+                        value={clientForm.fullName}
+                        onChange={handleClientInputChange}
+                        placeholder="Jean Dupont"
+                        required
+                      />
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="email">Email</Label>
+                        <Input
+                          id="email"
+                          name="email"
+                          type="email"
+                          value={clientForm.email}
+                          onChange={handleClientInputChange}
+                          placeholder="jean.dupont@example.com"
+                          required
                         />
                       </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                        <Input 
-                          placeholder="exemple@email.com" 
-                          type="email" 
-                          className="pl-10" 
-                          {...field} 
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="phone">Téléphone</Label>
+                        <Input
+                          id="phone"
+                          name="phone"
+                          value={clientForm.phone}
+                          onChange={handleClientInputChange}
+                          placeholder="+229 97 12 34 56"
+                          required
                         />
                       </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Mot de passe</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                        <Input 
-                          placeholder="********" 
-                          type="password" 
-                          className="pl-10" 
-                          {...field} 
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="password">Mot de passe</Label>
+                        <Input
+                          id="password"
+                          name="password"
+                          type="password"
+                          value={clientForm.password}
+                          onChange={handleClientInputChange}
+                          required
                         />
                       </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="confirmPassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Confirmer le mot de passe</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                        <Input 
-                          placeholder="********" 
-                          type="password" 
-                          className="pl-10" 
-                          {...field} 
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
+                        <Input
+                          id="confirmPassword"
+                          name="confirmPassword"
+                          type="password"
+                          value={clientForm.confirmPassword}
+                          onChange={handleClientInputChange}
+                          required
                         />
                       </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <Button 
-                type="submit" 
-                className="w-full bg-benin-green hover:bg-benin-green/90"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <span className="flex items-center justify-center">
-                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Création en cours...
-                  </span>
-                ) : (
-                  <span className="flex items-center">
-                    S'inscrire
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </span>
-                )}
-              </Button>
-            </form>
-          </Form>
-        </CardContent>
-        <CardFooter className="flex flex-col space-y-4 border-t p-6">
-          <div className="text-center text-sm text-gray-600">
-            Vous avez déjà un compte?{" "}
-            <Link to="/login" className="font-medium text-benin-green hover:underline">
-              Connectez-vous
+                    </div>
+                    
+                    <div className="flex items-center space-x-2 mt-4">
+                      <input type="checkbox" id="terms" className="h-4 w-4" required />
+                      <Label htmlFor="terms" className="text-sm">
+                        J'accepte les <Link to="#" className="text-blue-600 hover:underline">conditions d'utilisation</Link> et la <Link to="#" className="text-blue-600 hover:underline">politique de confidentialité</Link>
+                      </Label>
+                    </div>
+                  </CardContent>
+                  <CardFooter className="flex flex-col space-y-4">
+                    <Button 
+                      type="submit" 
+                      className="w-full bg-benin-green hover:bg-benin-green/90" 
+                      disabled={isLoading}
+                    >
+                      {isLoading ? "Inscription en cours..." : "S'inscrire"}
+                    </Button>
+                    
+                    <div className="text-center text-sm">
+                      Vous avez déjà un compte?{" "}
+                      <Link to="/login" className="text-blue-600 hover:underline">
+                        Se connecter
+                      </Link>
+                    </div>
+                  </CardFooter>
+                </form>
+              </Card>
+            </TabsContent>
+            
+            <TabsContent value="pharmacy">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Inscription Pharmacie</CardTitle>
+                  <CardDescription>
+                    Créez un compte pour votre pharmacie et gérez vos produits en ligne
+                  </CardDescription>
+                </CardHeader>
+                <form onSubmit={handlePharmacySubmit}>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="pharmacyName">Nom de la pharmacie</Label>
+                      <Input
+                        id="pharmacyName"
+                        name="pharmacyName"
+                        value={pharmacyForm.pharmacyName}
+                        onChange={handlePharmacyInputChange}
+                        placeholder="Pharmacie Centrale"
+                        required
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="ownerName">Nom du propriétaire</Label>
+                      <Input
+                        id="ownerName"
+                        name="ownerName"
+                        value={pharmacyForm.ownerName}
+                        onChange={handlePharmacyInputChange}
+                        placeholder="Dr. Jean Dupont"
+                        required
+                      />
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="pharmacy-email">Email</Label>
+                        <Input
+                          id="pharmacy-email"
+                          name="email"
+                          type="email"
+                          value={pharmacyForm.email}
+                          onChange={handlePharmacyInputChange}
+                          placeholder="pharmacie@example.com"
+                          required
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="pharmacy-phone">Téléphone</Label>
+                        <Input
+                          id="pharmacy-phone"
+                          name="phone"
+                          value={pharmacyForm.phone}
+                          onChange={handlePharmacyInputChange}
+                          placeholder="+229 97 12 34 56"
+                          required
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="address">Adresse</Label>
+                        <Input
+                          id="address"
+                          name="address"
+                          value={pharmacyForm.address}
+                          onChange={handlePharmacyInputChange}
+                          placeholder="123 Rue du Commerce"
+                          required
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="city">Ville</Label>
+                        <Input
+                          id="city"
+                          name="city"
+                          value={pharmacyForm.city}
+                          onChange={handlePharmacyInputChange}
+                          placeholder="Cotonou"
+                          required
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="licenseNumber">Numéro de licence</Label>
+                      <Input
+                        id="licenseNumber"
+                        name="licenseNumber"
+                        value={pharmacyForm.licenseNumber}
+                        onChange={handlePharmacyInputChange}
+                        placeholder="PHARM-123456"
+                        required
+                      />
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="pharmacy-password">Mot de passe</Label>
+                        <Input
+                          id="pharmacy-password"
+                          name="password"
+                          type="password"
+                          value={pharmacyForm.password}
+                          onChange={handlePharmacyInputChange}
+                          required
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="pharmacy-confirmPassword">Confirmer le mot de passe</Label>
+                        <Input
+                          id="pharmacy-confirmPassword"
+                          name="confirmPassword"
+                          type="password"
+                          value={pharmacyForm.confirmPassword}
+                          onChange={handlePharmacyInputChange}
+                          required
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2 mt-4">
+                      <input type="checkbox" id="pharmacy-terms" className="h-4 w-4" required />
+                      <Label htmlFor="pharmacy-terms" className="text-sm">
+                        J'accepte les <Link to="#" className="text-blue-600 hover:underline">conditions d'utilisation</Link> et la <Link to="#" className="text-blue-600 hover:underline">politique de confidentialité</Link>
+                      </Label>
+                    </div>
+                  </CardContent>
+                  <CardFooter className="flex flex-col space-y-4">
+                    <Button 
+                      type="submit" 
+                      className="w-full bg-benin-green hover:bg-benin-green/90" 
+                      disabled={isLoading}
+                    >
+                      {isLoading ? "Inscription en cours..." : "Soumettre la demande"}
+                    </Button>
+                    
+                    <div className="text-center text-sm">
+                      Pour plus d'informations sur le processus d'inscription des pharmacies,{" "}
+                      <Link to="/contact" className="text-blue-600 hover:underline">
+                        contactez-nous
+                      </Link>
+                    </div>
+                  </CardFooter>
+                </form>
+              </Card>
+            </TabsContent>
+          </Tabs>
+          
+          <div className="text-center mt-8">
+            <Link to="/pharmacy-register" className="inline-flex items-center text-benin-green hover:text-benin-green/80">
+              <ShieldCheck className="h-5 w-5 mr-2" />
+              Informations sur l'inscription des pharmacies
+              <ArrowRight className="h-4 w-4 ml-1" />
             </Link>
           </div>
-          <div className="text-center text-xs text-gray-500">
-            En vous inscrivant, vous acceptez nos{" "}
-            <Link to="/terms" className="text-benin-green hover:underline">
-              Termes et Conditions
-            </Link>{" "}
-            et notre{" "}
-            <Link to="/privacy" className="text-benin-green hover:underline">
-              Politique de confidentialité
-            </Link>
-          </div>
-        </CardFooter>
-      </Card>
-    </div>
+        </div>
+      </div>
+    </Layout>
   );
 };
 
