@@ -13,6 +13,10 @@ import PharmaciesPage from '@/pages/PharmaciesPage';
 import SearchPage from '@/pages/SearchPage';
 import CartPage from '@/pages/CartPage';
 import NotFound from '@/pages/NotFound';
+import DeliveryPage from '@/pages/DeliveryPage';
+import ClickCollectPage from '@/pages/ClickCollectPage';
+import PharmacySignupPage from '@/pages/PharmacySignupPage';
+import FAQPage from '@/pages/FAQPage';
 
 const App = () => {
   return (
@@ -29,6 +33,10 @@ const App = () => {
         <Route path="/pharmacies" element={<PharmaciesPage />} />
         <Route path="/search" element={<SearchPage />} />
         <Route path="/cart" element={<CartPage />} />
+        <Route path="/delivery" element={<DeliveryPage />} />
+        <Route path="/click-collect" element={<ClickCollectPage />} />
+        <Route path="/pharmacy-signup" element={<PharmacySignupPage />} />
+        <Route path="/faq" element={<FAQPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
