@@ -1,6 +1,6 @@
 
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Index from '@/pages/Index';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
@@ -18,6 +18,18 @@ import ClickCollectPage from '@/pages/ClickCollectPage';
 import PharmacySignupPage from '@/pages/PharmacySignupPage';
 import FAQPage from '@/pages/FAQPage';
 
+// Composant pour rediriger en fonction du type d'utilisateur
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const userType = localStorage.getItem('userType');
+  
+  // Si l'utilisateur n'est pas connecté, rediriger vers la page de connexion
+  if (!userType) {
+    return <Navigate to="/login" />;
+  }
+  
+  return <>{children}</>;
+};
+
 const App = () => {
   return (
     <Router>
@@ -28,7 +40,11 @@ const App = () => {
         <Route path="/about" element={<About />} />
         <Route path="/pharmacy-register" element={<PharmacyRegister />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/account" element={<UserAccount />} />
+        <Route path="/account" element={
+          <ProtectedRoute>
+            <UserAccount />
+          </ProtectedRoute>
+        } />
         <Route path="/medicines" element={<MedicinesPage />} />
         <Route path="/pharmacies" element={<PharmaciesPage />} />
         <Route path="/search" element={<SearchPage />} />

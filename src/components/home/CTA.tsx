@@ -14,7 +14,7 @@ const CTAButton = ({ text, path }: CTAButtonProps) => {
   return (
     <Button
       size="lg"
-      className="bg-benin-green text-white hover:bg-benin-green/90 transition-all hover:shadow-md"
+      className="bg-benin-green hover:bg-benin-green/90 text-white transition-all hover:shadow-md"
       onClick={() => navigate(path)}
     >
       {text}

@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
 import {
   Tabs,
@@ -30,8 +29,8 @@ import {
   ClipboardList,
   Users,
   BarChart3,
-  Plus,    // Added missing import
-  Search   // Added missing import
+  Plus,
+  Search
 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { Badge } from '@/components/ui/badge';
@@ -43,15 +42,21 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useNavigate } from 'react-router-dom';
 
 // Type d'utilisateur (à adapter selon les besoins)
 type UserType = 'client' | 'pharmacy' | 'admin';
 
 const UserAccount = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('profile');
-  // Simulation d'un utilisateur connecté (à remplacer par l'authentification réelle)
-  const [userType, setUserType] = useState<UserType>('client'); // Pour démonstration, permettre de basculer
+  
+  // Chargement du type d'utilisateur depuis le localStorage
+  const [userType, setUserType] = useState<UserType>(() => {
+    const savedUserType = localStorage.getItem('userType');
+    return (savedUserType as UserType) || 'client';
+  });
   
   const [isEditing, setIsEditing] = useState(false);
 
@@ -107,7 +112,8 @@ const UserAccount = () => {
       title: "Déconnexion réussie",
       description: "Vous êtes maintenant déconnecté.",
     });
-    // Logique de déconnexion à implémenter
+    localStorage.removeItem('userType');
+    navigate('/login');
   };
 
   const renderTabs = () => {
@@ -816,10 +822,11 @@ const UserAccount = () => {
     }
   };
 
-  // Pour simuler différents types d'utilisateurs (à enlever en production)
+  // Pour simuler différents types d'utilisateurs (uniquement pour admin)
   const handleChangeUserType = (type: UserType) => {
     setUserType(type);
     setActiveTab('profile');
+    localStorage.setItem('userType', type); // Sauvegarde du type d'utilisateur
     toast({
       title: `Mode ${type} activé`,
       description: `Vous consultez maintenant l'interface en mode ${type}.`,
@@ -839,36 +846,37 @@ const UserAccount = () => {
             </p>
           </div>
           
-          {/* Simulation de changement de type d'utilisateur (à enlever en production) */}
-          <div className="flex gap-2 flex-wrap">
-            <Button
-              variant={userType === 'client' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => handleChangeUserType('client')}
-              className={userType === 'client' ? 'bg-benin-green hover:bg-benin-green/90' : ''}
-            >
-              <User className="h-4 w-4 mr-2" />
-              Mode Client
-            </Button>
-            <Button
-              variant={userType === 'pharmacy' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => handleChangeUserType('pharmacy')}
-              className={userType === 'pharmacy' ? 'bg-benin-green hover:bg-benin-green/90' : ''}
-            >
-              <Store className="h-4 w-4 mr-2" />
-              Mode Pharmacie
-            </Button>
-            <Button
-              variant={userType === 'admin' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => handleChangeUserType('admin')}
-              className={userType === 'admin' ? 'bg-benin-green hover:bg-benin-green/90' : ''}
-            >
-              <ClipboardList className="h-4 w-4 mr-2" />
-              Mode Admin
-            </Button>
-          </div>
+          {userType === 'admin' && (
+            <div className="flex gap-2 flex-wrap">
+              <Button
+                variant={userType === 'client' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => handleChangeUserType('client')}
+                className={userType === 'client' ? 'bg-benin-green hover:bg-benin-green/90' : ''}
+              >
+                <User className="h-4 w-4 mr-2" />
+                Mode Client
+              </Button>
+              <Button
+                variant={userType === 'pharmacy' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => handleChangeUserType('pharmacy')}
+                className={userType === 'pharmacy' ? 'bg-benin-green hover:bg-benin-green/90' : ''}
+              >
+                <Store className="h-4 w-4 mr-2" />
+                Mode Pharmacie
+              </Button>
+              <Button
+                variant={userType === 'admin' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => handleChangeUserType('admin')}
+                className={userType === 'admin' ? 'bg-benin-green hover:bg-benin-green/90' : ''}
+              >
+                <ClipboardList className="h-4 w-4 mr-2" />
+                Mode Admin
+              </Button>
+            </div>
+          )}
         </div>
         
         <Tabs defaultValue="profile" className="space-y-4" value={activeTab}>
