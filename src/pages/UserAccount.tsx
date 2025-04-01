@@ -837,6 +837,11 @@ const UserAccount = () => {
     }
   };
 
+  // Helper function to determine if a button should be active
+  const isActiveButton = (buttonType: UserType): boolean => {
+    return userType === buttonType;
+  };
+
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
@@ -853,28 +858,28 @@ const UserAccount = () => {
           {userType === 'admin' && (
             <div className="flex gap-2 flex-wrap">
               <Button
-                variant={userType === 'client' ? 'default' : 'outline'}
+                variant={isActiveButton('client') ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => handleChangeUserType('client')}
-                className={userType === 'client' ? 'bg-benin-green hover:bg-benin-green/90' : ''}
+                className={isActiveButton('client') ? 'bg-benin-green hover:bg-benin-green/90' : ''}
               >
                 <User className="h-4 w-4 mr-2" />
                 Mode Client
               </Button>
               <Button
-                variant={userType === 'pharmacy' ? 'default' : 'outline'}
+                variant={isActiveButton('pharmacy') ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => handleChangeUserType('pharmacy')}
-                className={userType === 'pharmacy' ? 'bg-benin-green hover:bg-benin-green/90' : ''}
+                className={isActiveButton('pharmacy') ? 'bg-benin-green hover:bg-benin-green/90' : ''}
               >
                 <Store className="h-4 w-4 mr-2" />
                 Mode Pharmacie
               </Button>
               <Button
-                variant={userType === 'admin' ? 'default' : 'outline'}
+                variant={isActiveButton('admin') ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => handleChangeUserType('admin')}
-                className={userType === 'admin' ? 'bg-benin-green hover:bg-benin-green/90' : ''}
+                className={isActiveButton('admin') ? 'bg-benin-green hover:bg-benin-green/90' : ''}
               >
                 <ClipboardList className="h-4 w-4 mr-2" />
                 Mode Admin
