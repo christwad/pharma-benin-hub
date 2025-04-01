@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,12 +15,15 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
-import { User, Landmark, Lock, Mail } from "lucide-react";
+import { User, Landmark, Lock, Mail, AlertCircle } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const Login = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("client");
+  const [loginError, setLoginError] = useState<string | null>(null);
 
   // Client form state
   const [clientForm, setClientForm] = useState({
@@ -44,6 +47,7 @@ const Login = () => {
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
+    setLoginError(null);
   };
 
   const handlePharmacyInputChange = (
@@ -54,11 +58,13 @@ const Login = () => {
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
+    setLoginError(null);
   };
 
   const handleClientSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setLoginError(null);
 
     // Simulate API call
     setTimeout(() => {
@@ -66,13 +72,19 @@ const Login = () => {
       
       // Demo login - in a real app, this would validate credentials with a backend
       if (clientForm.email === "demo@example.com" && clientForm.password === "password") {
+        // Set user type in localStorage to limit access
+        localStorage.setItem("userType", "client");
+        localStorage.setItem("userEmail", clientForm.email);
+        
         toast({
           title: "Connexion réussie!",
           description: "Bienvenue sur PharmaBenin.",
         });
-        // Redirect to home or dashboard (in a real app)
-        // history.push("/account");
+        
+        // Redirect to client dashboard
+        navigate("/account");
       } else {
+        setLoginError("Email ou mot de passe incorrect.");
         toast({
           title: "Échec de la connexion",
           description: "Email ou mot de passe incorrect.",
@@ -85,6 +97,7 @@ const Login = () => {
   const handlePharmacySubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setLoginError(null);
 
     // Simulate API call
     setTimeout(() => {
@@ -92,13 +105,31 @@ const Login = () => {
       
       // Demo login - in a real app, this would validate credentials with a backend
       if (pharmacyForm.email === "pharmacy@example.com" && pharmacyForm.password === "password") {
+        // Set user type in localStorage to limit access
+        localStorage.setItem("userType", "pharmacy");
+        localStorage.setItem("userEmail", pharmacyForm.email);
+        
         toast({
           title: "Connexion réussie!",
           description: "Bienvenue sur votre espace pharmacie.",
         });
-        // Redirect to pharmacy dashboard (in a real app)
-        // history.push("/account");
+        
+        // Redirect to pharmacy dashboard
+        navigate("/account");
+      } else if (pharmacyForm.email === "admin@example.com" && pharmacyForm.password === "adminpass") {
+        // Set user type for admin
+        localStorage.setItem("userType", "admin");
+        localStorage.setItem("userEmail", pharmacyForm.email);
+        
+        toast({
+          title: "Connexion administrateur réussie!",
+          description: "Bienvenue sur le panneau d'administration.",
+        });
+        
+        // Redirect to admin dashboard
+        navigate("/account");
       } else {
+        setLoginError("Email ou mot de passe incorrect.");
         toast({
           title: "Échec de la connexion",
           description: "Email ou mot de passe incorrect.",
@@ -118,6 +149,14 @@ const Login = () => {
               Connectez-vous à votre compte PharmaBenin
             </p>
           </div>
+
+          {loginError && (
+            <Alert variant="destructive" className="mb-6">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Erreur</AlertTitle>
+              <AlertDescription>{loginError}</AlertDescription>
+            </Alert>
+          )}
 
           <Tabs defaultValue="client" className="w-full" value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="grid grid-cols-2 w-full mb-8 bg-gray-100 p-1 rounded-lg">

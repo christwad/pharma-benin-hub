@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { useCart } from "@/hooks/use-cart";
 import { useToast } from "@/components/ui/use-toast";
 
+// Liste élargie de médicaments disponibles au Bénin
 const medicines = [
   {
     id: 1,
@@ -17,6 +18,7 @@ const medicines = [
     available: true,
     category: "Antidouleur",
     image: "/placeholder.svg",
+    pharmacy: "Pharmacie Centrale de Cotonou",
   },
   {
     id: 2,
@@ -26,6 +28,7 @@ const medicines = [
     available: true,
     category: "Anti-inflammatoire",
     image: "/placeholder.svg",
+    pharmacy: "Pharmacie du Pont",
   },
   {
     id: 3,
@@ -35,6 +38,7 @@ const medicines = [
     available: true,
     category: "Antibiotique",
     image: "/placeholder.svg",
+    pharmacy: "Pharmacie des Collines",
   },
   {
     id: 4,
@@ -44,6 +48,87 @@ const medicines = [
     available: false,
     category: "Antidouleur",
     image: "/placeholder.svg",
+    pharmacy: "Pharmacie Centrale de Cotonou",
+  },
+  {
+    id: 5,
+    name: "Artemether-Lumefantrine",
+    brand: "Coartem",
+    price: 6500,
+    available: true,
+    category: "Antipaludique",
+    image: "/placeholder.svg",
+    pharmacy: "Pharmacie du Pont",
+  },
+  {
+    id: 6,
+    name: "Metformine 500mg",
+    brand: "Glucophage",
+    price: 3800,
+    available: true,
+    category: "Antidiabétique",
+    image: "/placeholder.svg",
+    pharmacy: "Pharmacie des Collines",
+  },
+  {
+    id: 7,
+    name: "Diazépam 10mg",
+    brand: "Valium",
+    price: 4200,
+    available: true,
+    category: "Anxiolytique",
+    image: "/placeholder.svg",
+    pharmacy: "Pharmacie Centrale de Cotonou",
+  },
+  {
+    id: 8,
+    name: "Ciprofloxacine 500mg",
+    brand: "Ciproxine",
+    price: 5600,
+    available: true,
+    category: "Antibiotique",
+    image: "/placeholder.svg",
+    pharmacy: "Pharmacie du Pont",
+  },
+  {
+    id: 9,
+    name: "Métronidazole 500mg",
+    brand: "Flagyl",
+    price: 3100,
+    available: true,
+    category: "Antiparasitaire",
+    image: "/placeholder.svg",
+    pharmacy: "Pharmacie des Collines",
+  },
+  {
+    id: 10,
+    name: "Oméprazole 20mg",
+    brand: "Mopral",
+    price: 4800,
+    available: true,
+    category: "Anti-ulcéreux",
+    image: "/placeholder.svg",
+    pharmacy: "Pharmacie Centrale de Cotonou",
+  },
+  {
+    id: 11,
+    name: "Quinine 300mg",
+    brand: "Quinimax",
+    price: 5200,
+    available: true,
+    category: "Antipaludique",
+    image: "/placeholder.svg",
+    pharmacy: "Pharmacie du Pont",
+  },
+  {
+    id: 12,
+    name: "Loratadine 10mg",
+    brand: "Clarityne",
+    price: 2900,
+    available: true,
+    category: "Antihistaminique",
+    image: "/placeholder.svg",
+    pharmacy: "Pharmacie des Collines",
   },
 ];
 
@@ -51,6 +136,9 @@ const PopularMedicines = () => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const { toast } = useToast();
+
+  // Afficher seulement les 8 premiers médicaments sur la page d'accueil
+  const displayedMedicines = medicines.slice(0, 8);
 
   const handleAddToCart = (medicine: any) => {
     addToCart(medicine);
@@ -81,7 +169,7 @@ const PopularMedicines = () => {
         </div>
 
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {medicines.map((medicine) => (
+          {displayedMedicines.map((medicine) => (
             <Card key={medicine.id} className="card-hover overflow-hidden">
               <div className="relative h-48 w-full overflow-hidden bg-gray-100">
                 <img
@@ -103,6 +191,9 @@ const PopularMedicines = () => {
               <CardContent className="p-4">
                 <h3 className="mb-1 text-lg font-semibold">{medicine.name}</h3>
                 <p className="text-sm text-gray-600">{medicine.brand}</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  Fourni par: {medicine.pharmacy}
+                </p>
                 <div className="mt-2 flex items-center justify-between">
                   <p className="text-lg font-bold text-benin-green">
                     {medicine.price.toLocaleString()} FCFA

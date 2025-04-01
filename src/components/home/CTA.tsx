@@ -27,16 +27,14 @@ const CTA = () => {
             </Button>
             <Button
               size="lg"
-              variant="outline"
-              className="border-white text-white hover:bg-white/10 transition-all hover:shadow-md"
+              className="bg-white text-benin-green hover:bg-white/90 transition-all hover:shadow-md"
               onClick={() => navigate("/register")}
             >
               Créer un compte
             </Button>
             <Button
               size="lg"
-              variant="outline"
-              className="border-white text-white hover:bg-white/10 transition-all hover:shadow-md"
+              className="bg-white text-benin-green hover:bg-white/90 transition-all hover:shadow-md"
               onClick={() => navigate("/pharmacy-signup")}
             >
               Inscrire ma pharmacie
