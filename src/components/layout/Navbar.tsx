@@ -34,9 +34,11 @@ const Navbar = () => {
         <div className="flex items-center gap-6">
           <Link to="/" className="flex items-center gap-2">
             <div className="relative h-8 w-8 overflow-hidden rounded-full bg-benin-green">
-              <div className="absolute inset-0 flex items-center justify-center text-white">
-                <span className="font-bold">PB</span>
-              </div>
+              <img 
+                src="https://images.unsplash.com/photo-1586015555751-63bb77f4322a?auto=format&fit=crop&w=100&h=100" 
+                alt="PB Logo"
+                className="h-full w-full object-cover"
+              />
             </div>
             <span className="hidden text-xl font-bold text-benin-green sm:inline-block">
               Pharma<span className="text-medical-dark">Benin</span>

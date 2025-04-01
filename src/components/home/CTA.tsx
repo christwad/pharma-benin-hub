@@ -24,8 +24,14 @@ const CTAButton = ({ text, path }: CTAButtonProps) => {
 
 const CTA = () => {
   return (
-    <section className="bg-gradient-to-r from-benin-green to-benin-green/90 py-16 text-white">
-      <div className="container mx-auto px-4">
+    <section className="bg-gradient-to-r from-benin-green to-benin-green/90 py-16 text-white relative overflow-hidden">
+      {/* Background pattern */}
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute -top-20 -right-20 h-64 w-64 rounded-full bg-white"></div>
+        <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-white"></div>
+      </div>
+      
+      <div className="container mx-auto px-4 relative z-10">
         <div className="mx-auto max-w-4xl text-center">
           <h2 className="mb-6 text-3xl font-bold tracking-tight sm:text-4xl">
             Rejoignez PharmaBenin aujourd'hui
