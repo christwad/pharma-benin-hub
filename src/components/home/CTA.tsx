@@ -3,9 +3,26 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
-const CTA = () => {
-  const navigate = useNavigate();
+interface CTAButtonProps {
+  text: string;
+  path: string;
+}
 
+const CTAButton = ({ text, path }: CTAButtonProps) => {
+  const navigate = useNavigate();
+  
+  return (
+    <Button
+      size="lg"
+      className="bg-benin-green text-white hover:bg-benin-green/90 transition-all hover:shadow-md"
+      onClick={() => navigate(path)}
+    >
+      {text}
+    </Button>
+  );
+};
+
+const CTA = () => {
   return (
     <section className="bg-gradient-to-r from-benin-green to-benin-green/90 py-16 text-white">
       <div className="container mx-auto px-4">
@@ -18,27 +35,9 @@ const CTA = () => {
             PharmaBenin est la plateforme qu'il vous faut.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <Button
-              size="lg"
-              className="bg-white text-benin-green hover:bg-white/90 transition-all hover:shadow-md"
-              onClick={() => navigate("/login")}
-            >
-              Se connecter
-            </Button>
-            <Button
-              size="lg"
-              className="bg-white text-benin-green hover:bg-white/90 transition-all hover:shadow-md"
-              onClick={() => navigate("/register")}
-            >
-              Créer un compte
-            </Button>
-            <Button
-              size="lg"
-              className="bg-white text-benin-green hover:bg-white/90 transition-all hover:shadow-md"
-              onClick={() => navigate("/pharmacy-signup")}
-            >
-              Inscrire ma pharmacie
-            </Button>
+            <CTAButton text="Se connecter" path="/login" />
+            <CTAButton text="Créer un compte" path="/register" />
+            <CTAButton text="Inscrire ma pharmacie" path="/pharmacy-signup" />
           </div>
         </div>
       </div>
