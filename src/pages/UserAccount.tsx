@@ -825,6 +825,7 @@ const UserAccount = () => {
 
   // Pour simuler différents types d'utilisateurs (uniquement pour admin)
   const handleChangeUserType = (type: UserType) => {
+    // Check if current userType is admin before allowing change
     if (userType === 'admin') {
       setUserType(type);
       setActiveTab('profile');
