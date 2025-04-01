@@ -65,7 +65,7 @@ const Hero = () => {
               <div className="animate-pulse-slow absolute -bottom-6 left-1/2 h-16 w-16 -translate-x-1/2 rounded-full bg-benin-red"></div>
               <div className="flex h-full w-full items-center justify-center rounded-full bg-white shadow-xl">
                 <img
-                  src="https://images.unsplash.com/photo-1586015555751-63bb77f4322a?auto=format&fit=crop&w=500&h=500"
+                  src="https://images.unsplash.com/photo-1563453392212-326f5e854473?auto=format&fit=crop&w=500&h=500"
                   alt="PharmaBenin Logo"
                   className="h-56 w-56 object-contain"
                 />

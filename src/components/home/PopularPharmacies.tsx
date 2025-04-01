@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +13,7 @@ const pharmacies = [
     address: "Avenue Jean Paul II, Cotonou",
     phone: "+229 21 38 99 99",
     rating: 4.8,
-    image: "https://images.unsplash.com/photo-1473177104440-ffee2f376098?auto=format&fit=crop&w=800&h=600",
+    image: "https://images.unsplash.com/photo-1577460551100-d94b9db0f17c?auto=format&fit=crop&w=800&h=600",
     isOpen: true,
     distance: "1.2 km",
   },
@@ -22,7 +23,7 @@ const pharmacies = [
     address: "Boulevard de la Marina, Cotonou",
     phone: "+229 21 31 53 53",
     rating: 4.5,
-    image: "https://images.unsplash.com/photo-1576602976047-174e57a47881?auto=format&fit=crop&w=800&h=600",
+    image: "https://images.unsplash.com/photo-1576671414121-aa2d8c110c22?auto=format&fit=crop&w=800&h=600",
     isOpen: true,
     distance: "2.4 km",
   },
@@ -32,7 +33,7 @@ const pharmacies = [
     address: "Avenue Steinmetz, Cotonou",
     phone: "+229 21 31 20 22",
     rating: 4.7,
-    image: "https://images.unsplash.com/photo-1587854692152-cbe660dbde88?auto=format&fit=crop&w=800&h=600",
+    image: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=800&h=600",
     isOpen: false,
     distance: "3.1 km",
   },
@@ -42,7 +43,7 @@ const pharmacies = [
     address: "Carrefour Zongo, Cotonou",
     phone: "+229 21 31 34 34",
     rating: 4.4,
-    image: "https://images.unsplash.com/photo-1642391326524-72661a051e5f?auto=format&fit=crop&w=800&h=600",
+    image: "https://images.unsplash.com/photo-1579154341098-e4e158cc7f55?auto=format&fit=crop&w=800&h=600",
     isOpen: true,
     distance: "3.8 km",
   },
