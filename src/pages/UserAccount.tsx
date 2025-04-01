@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
 import {
@@ -824,13 +825,15 @@ const UserAccount = () => {
 
   // Pour simuler différents types d'utilisateurs (uniquement pour admin)
   const handleChangeUserType = (type: UserType) => {
-    setUserType(type);
-    setActiveTab('profile');
-    localStorage.setItem('userType', type); // Sauvegarde du type d'utilisateur
-    toast({
-      title: `Mode ${type} activé`,
-      description: `Vous consultez maintenant l'interface en mode ${type}.`,
-    });
+    if (userType === 'admin') {
+      setUserType(type);
+      setActiveTab('profile');
+      localStorage.setItem('userType', type); // Sauvegarde du type d'utilisateur
+      toast({
+        title: `Mode ${type} activé`,
+        description: `Vous consultez maintenant l'interface en mode ${type}.`,
+      });
+    }
   };
 
   return (
