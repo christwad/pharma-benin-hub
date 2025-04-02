@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -34,8 +35,8 @@ const Navbar = () => {
           <Link to="/" className="flex items-center gap-2">
             <div className="relative h-8 w-8 overflow-hidden rounded-full bg-benin-green">
               <img 
-                src="/images/logo.jpg" 
-                alt="PB Logo"
+                src="/images/logo-animated.gif" 
+                alt="PB Logo Animé"
                 className="h-full w-full object-cover"
               />
             </div>

@@ -64,8 +64,8 @@ const Hero = () => {
               <div className="animate-pulse-slow absolute -bottom-6 left-1/2 h-16 w-16 -translate-x-1/2 rounded-full bg-benin-red"></div>
               <div className="flex h-full w-full items-center justify-center rounded-full bg-white shadow-xl">
                 <img
-                  src="/images/logo.jpg"
-                  alt="PharmaBenin Logo"
+                  src="/images/logo-animated.gif"
+                  alt="PharmaBenin Logo Animé"
                   className="h-56 w-56 object-contain"
                 />
               </div>
