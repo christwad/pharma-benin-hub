@@ -35,7 +35,7 @@ const Navbar = () => {
           <Link to="/" className="flex items-center gap-2">
             <div className="relative h-8 w-8 overflow-hidden rounded-full bg-benin-green">
               <img 
-                src="/images/logo-animated.gif" 
+                src="/lovable-uploads/db0dd2a6-c5b1-473a-b480-dfe3585f5c23.png" 
                 alt="PB Logo Animé"
                 className="h-full w-full object-cover"
               />

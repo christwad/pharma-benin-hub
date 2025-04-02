@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -64,7 +65,7 @@ const Hero = () => {
               <div className="animate-pulse-slow absolute -bottom-6 left-1/2 h-16 w-16 -translate-x-1/2 rounded-full bg-benin-red"></div>
               <div className="flex h-full w-full items-center justify-center rounded-full bg-white shadow-xl">
                 <img
-                  src="/images/logo-animated.gif"
+                  src="/lovable-uploads/db0dd2a6-c5b1-473a-b480-dfe3585f5c23.png"
                   alt="PharmaBenin Logo Animé"
                   className="h-56 w-56 object-contain"
                 />
