@@ -18,10 +18,11 @@ const Hero = () => {
 
   return (
     <section className="relative overflow-hidden">
-      <div className="hero-gradient absolute inset-0 opacity-20"></div>
-      <div className="container relative mx-auto px-4 py-16 sm:py-24">
-        <div className="grid gap-12 md:grid-cols-2 md:items-center">
-          <div className="space-y-6">
+      <div className="bg-gradient-to-r from-medical-light to-medical-medium absolute top-0 left-0 right-0 h-80 w-full opacity-10"></div>
+      <div className="container relative mx-auto px-4 py-8 sm:py-12">
+        <div className="grid lg:grid-cols-2 gap-8 items-center">
+          {/* Colonne gauche - Contenu et recherche */}
+          <div className="space-y-6 z-10">
             <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
               Trouvez vos médicaments facilement au{" "}
               <span className="bg-gradient-to-r from-benin-green to-medical-dark bg-clip-text text-transparent">
@@ -58,21 +59,20 @@ const Hero = () => {
             </div>
           </div>
           
-          <div className="hidden items-center justify-center md:flex">
-            <div className="relative h-96 w-96 rounded-full bg-benin-green/10 p-4">
-              <div className="animate-pulse-slow absolute -top-6 left-1/2 h-24 w-24 -translate-x-1/2 rounded-full bg-medical-medium"></div>
-              <div className="animate-pulse-slow absolute -right-6 top-1/2 h-20 w-20 -translate-y-1/2 rounded-full bg-benin-yellow"></div>
-              <div className="animate-pulse-slow absolute -bottom-6 left-1/2 h-16 w-16 -translate-x-1/2 rounded-full bg-benin-red"></div>
-              <div className="flex h-full w-full items-center justify-center rounded-full bg-white shadow-xl">
-                <div className="relative h-56 w-56 overflow-hidden rounded-full">
-                  <img
-                    src="/lovable-uploads/db0dd2a6-c5b1-473a-b480-dfe3585f5c23.png"
-                    alt="PharmaBenin Logo Animé"
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-              </div>
+          {/* Colonne droite - Image */}
+          <div className="hidden lg:block relative">
+            <div className="relative overflow-hidden rounded-2xl shadow-xl">
+              <img
+                src="/lovable-uploads/5f2d7c9e-8757-47d2-b0c6-8eda77b9d088.png"
+                alt="Pharmacien aidant un client"
+                className="w-full h-[500px] object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-benin-green/10 to-medical-dark/10"></div>
             </div>
+
+            {/* Éléments décoratifs */}
+            <div className="absolute -bottom-6 -left-6 h-24 w-24 rounded-full bg-benin-yellow/30 blur-xl"></div>
+            <div className="absolute -top-6 -right-6 h-24 w-24 rounded-full bg-medical-medium/30 blur-xl"></div>
           </div>
         </div>
       </div>
