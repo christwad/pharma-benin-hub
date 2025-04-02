@@ -64,11 +64,13 @@ const Hero = () => {
               <div className="animate-pulse-slow absolute -right-6 top-1/2 h-20 w-20 -translate-y-1/2 rounded-full bg-benin-yellow"></div>
               <div className="animate-pulse-slow absolute -bottom-6 left-1/2 h-16 w-16 -translate-x-1/2 rounded-full bg-benin-red"></div>
               <div className="flex h-full w-full items-center justify-center rounded-full bg-white shadow-xl">
-                <img
-                  src="/lovable-uploads/db0dd2a6-c5b1-473a-b480-dfe3585f5c23.png"
-                  alt="PharmaBenin Logo Animé"
-                  className="h-56 w-56 object-contain"
-                />
+                <div className="relative h-56 w-56 overflow-hidden rounded-full">
+                  <img
+                    src="/lovable-uploads/db0dd2a6-c5b1-473a-b480-dfe3585f5c23.png"
+                    alt="PharmaBenin Logo Animé"
+                    className="h-full w-full object-cover"
+                  />
+                </div>
               </div>
             </div>
           </div>
