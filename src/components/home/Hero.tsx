@@ -17,62 +17,61 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative overflow-hidden">
-      <div className="bg-gradient-to-r from-medical-light to-medical-medium absolute top-0 left-0 right-0 h-80 w-full opacity-10"></div>
-      <div className="container relative mx-auto px-4 py-8 sm:py-12">
-        <div className="grid lg:grid-cols-2 gap-8 items-center">
-          {/* Colonne gauche - Contenu et recherche */}
-          <div className="space-y-6 z-10">
-            <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
-              Trouvez vos médicaments facilement au{" "}
-              <span className="bg-gradient-to-r from-benin-green to-medical-dark bg-clip-text text-transparent">
-                Bénin
-              </span>
-            </h1>
-            <p className="text-lg text-gray-600">
-              Une plateforme qui connecte les pharmacies locales et les clients pour faciliter
-              l'accès aux médicaments au Bénin.
-            </p>
-            
-            <form onSubmit={handleSearch} className="flex w-full max-w-md gap-2">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-                <Input
-                  type="text"
-                  placeholder="Rechercher un médicament..."
-                  className="pl-10"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-              <Button type="submit">Rechercher</Button>
-            </form>
-            
-            <div className="flex flex-wrap gap-4">
-              <Button variant="outline" className="gap-2" onClick={() => navigate("/pharmacies")}>
-                <MapPin className="h-4 w-4" />
-                Trouver une pharmacie
-              </Button>
-              <Button variant="outline" onClick={() => navigate("/medicines")}>
-                Voir les médicaments
-              </Button>
-            </div>
-          </div>
+    <section className="relative bg-gradient-to-b from-medical-light to-white py-16 sm:py-20">
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-full bg-[url('/lovable-uploads/5f2d7c9e-8757-47d2-b0c6-8eda77b9d088.png')] bg-cover bg-center opacity-10"></div>
+      </div>
+      
+      <div className="container relative mx-auto px-4 z-10">
+        <div className="flex flex-col items-center text-center max-w-3xl mx-auto">
+          <h1 className="text-4xl font-bold tracking-tight text-benin-green mb-6 sm:text-5xl md:text-6xl">
+            Trouvez vos médicaments facilement au{" "}
+            <span className="bg-gradient-to-r from-benin-green to-medical-dark bg-clip-text text-transparent">
+              Bénin
+            </span>
+          </h1>
           
-          {/* Colonne droite - Image */}
-          <div className="hidden lg:block relative">
-            <div className="relative overflow-hidden rounded-2xl shadow-xl">
-              <img
-                src="/lovable-uploads/5f2d7c9e-8757-47d2-b0c6-8eda77b9d088.png"
-                alt="Pharmacien aidant un client"
-                className="w-full h-[500px] object-cover"
+          <p className="text-lg text-gray-600 mb-8 max-w-2xl">
+            Une plateforme qui connecte les pharmacies locales et les clients pour faciliter
+            l'accès aux médicaments au Bénin. Commandez en ligne et faites-vous livrer !
+          </p>
+          
+          <form onSubmit={handleSearch} className="flex w-full max-w-lg mb-8 gap-2 bg-white rounded-lg shadow-lg p-1">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+              <Input
+                type="text"
+                placeholder="Rechercher un médicament..."
+                className="pl-10 border-none focus:ring-0 h-12 text-lg"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-benin-green/10 to-medical-dark/10"></div>
             </div>
-
-            {/* Éléments décoratifs */}
-            <div className="absolute -bottom-6 -left-6 h-24 w-24 rounded-full bg-benin-yellow/30 blur-xl"></div>
-            <div className="absolute -top-6 -right-6 h-24 w-24 rounded-full bg-medical-medium/30 blur-xl"></div>
+            <Button 
+              type="submit" 
+              size="lg"
+              className="bg-benin-green hover:bg-benin-green/90 text-white px-8"
+            >
+              Rechercher
+            </Button>
+          </form>
+          
+          <div className="flex flex-wrap justify-center gap-4">
+            <Button 
+              variant="outline" 
+              className="gap-2 border-benin-green text-benin-green hover:bg-benin-green hover:text-white transition-colors" 
+              onClick={() => navigate("/pharmacies")}
+            >
+              <MapPin className="h-4 w-4" />
+              Trouver une pharmacie
+            </Button>
+            <Button 
+              variant="outline" 
+              className="border-benin-green text-benin-green hover:bg-benin-green hover:text-white transition-colors"
+              onClick={() => navigate("/medicines")}
+            >
+              Voir les médicaments
+            </Button>
           </div>
         </div>
       </div>

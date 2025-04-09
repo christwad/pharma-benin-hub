@@ -1,6 +1,6 @@
 
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { 
   Search, 
@@ -19,6 +19,24 @@ const Navbar = () => {
   const isMobile = useIsMobile();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { cartCount } = useCart();
+  const location = useLocation();
+  const [isScrolled, setIsScrolled] = useState(false);
+  
+  // Detect scroll to add shadow
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   const navLinks = [
     { name: "Accueil", path: "/" },
@@ -28,31 +46,42 @@ const Navbar = () => {
     { name: "Contact", path: "/contact" },
   ];
 
+  // Check if the path is active
+  const isActivePath = (path: string) => {
+    return location.pathname === path;
+  };
+
   return (
-    <nav className="sticky top-0 z-50 w-full border-b bg-white/90 backdrop-blur-md">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+    <nav className={`sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur-md transition-all duration-300 ${
+      isScrolled ? "shadow-md" : ""
+    }`}>
+      <div className="container mx-auto flex h-20 items-center justify-between px-4">
         <div className="flex items-center gap-6">
           <Link to="/" className="flex items-center gap-2">
-            <div className="relative h-8 w-8 overflow-hidden rounded-full bg-benin-green">
+            <div className="relative h-10 w-10 overflow-hidden rounded-full bg-benin-green">
               <img 
                 src="/lovable-uploads/db0dd2a6-c5b1-473a-b480-dfe3585f5c23.png" 
                 alt="PB Logo Animé"
                 className="h-full w-full object-cover"
               />
             </div>
-            <span className="hidden text-xl font-bold text-benin-green sm:inline-block">
+            <span className="hidden text-2xl font-bold text-benin-green sm:inline-block">
               Pharma<span className="text-medical-dark">Benin</span>
             </span>
           </Link>
         </div>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex md:items-center md:gap-6">
+        <div className="hidden md:flex md:items-center md:gap-8">
           {navLinks.map((link) => (
             <Link
               key={link.path}
               to={link.path}
-              className="text-sm font-medium text-gray-700 transition-colors hover:text-benin-green"
+              className={`text-base font-medium transition-colors ${
+                isActivePath(link.path) 
+                  ? "text-benin-green border-b-2 border-benin-green pb-1" 
+                  : "text-gray-700 hover:text-benin-green"
+              }`}
             >
               {link.name}
             </Link>
@@ -73,15 +102,9 @@ const Navbar = () => {
             )}
           </Link>
           <Link to="/login">
-            <Button variant="outline" size="sm" className="hidden md:flex gap-2">
+            <Button variant="outline" size="sm" className="hidden md:flex gap-2 border-benin-green text-benin-green hover:bg-benin-green hover:text-white">
               <LogIn className="h-4 w-4" />
-              <span>Connexion</span>
-            </Button>
-          </Link>
-          <Link to="/account">
-            <Button variant="default" size="sm" className="hidden md:flex gap-2">
-              <User className="h-4 w-4" />
-              <span>Compte</span>
+              <span>Connexion Pharmacie</span>
             </Button>
           </Link>
 
@@ -99,7 +122,11 @@ const Navbar = () => {
                     <Link
                       key={link.path}
                       to={link.path}
-                      className="text-base font-medium text-gray-700 transition-colors hover:text-benin-green"
+                      className={`text-base font-medium ${
+                        isActivePath(link.path) 
+                          ? "text-benin-green" 
+                          : "text-gray-700 hover:text-benin-green"
+                      }`}
                       onClick={() => setIsMenuOpen(false)}
                     >
                       {link.name}
@@ -111,19 +138,9 @@ const Navbar = () => {
                       onClick={() => setIsMenuOpen(false)}
                       className="w-full"
                     >
-                      <Button variant="outline" className="w-full justify-start gap-2">
+                      <Button variant="outline" className="w-full justify-start gap-2 border-benin-green text-benin-green hover:bg-benin-green hover:text-white">
                         <LogIn className="h-4 w-4" />
-                        <span>Connexion</span>
-                      </Button>
-                    </Link>
-                    <Link 
-                      to="/account" 
-                      onClick={() => setIsMenuOpen(false)}
-                      className="w-full"
-                    >
-                      <Button variant="default" className="w-full justify-start gap-2">
-                        <User className="h-4 w-4" />
-                        <span>Compte</span>
+                        <span>Connexion Pharmacie</span>
                       </Button>
                     </Link>
                   </div>
