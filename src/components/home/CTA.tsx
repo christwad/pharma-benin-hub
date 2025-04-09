@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -49,12 +50,12 @@ const CTA = () => {
             <CTAButton 
               text="Créer un compte" 
               path="/register" 
-              className="bg-medical-medium hover:bg-medical-medium/90 text-white transition-all hover:shadow-md"
+              className="bg-white text-benin-green hover:bg-white/90 hover:text-benin-green/90 transition-all hover:shadow-md"
             />
             <CTAButton 
               text="Inscrire ma pharmacie" 
               path="/pharmacy-signup" 
-              className="bg-benin-yellow hover:bg-benin-yellow/90 text-benin-green transition-all hover:shadow-md"
+              className="bg-white text-benin-green hover:bg-white/90 hover:text-benin-green/90 transition-all hover:shadow-md"
             />
           </div>
         </div>
@@ -64,3 +65,4 @@ const CTA = () => {
 };
 
 export default CTA;
+
