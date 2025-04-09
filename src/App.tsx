@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Index from '@/pages/Index';
 import Login from '@/pages/Login';
@@ -18,12 +18,24 @@ import ClickCollectPage from '@/pages/ClickCollectPage';
 import PharmacySignupPage from '@/pages/PharmacySignupPage';
 import FAQPage from '@/pages/FAQPage';
 
-// Composant pour rediriger en fonction du type d'utilisateur
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+// Composant pour rediriger si l'utilisateur n'est pas une pharmacie ou un admin
+const ProtectedPharmacyRoute = ({ children }: { children: React.ReactNode }) => {
   const userType = localStorage.getItem('userType');
   
-  // Si l'utilisateur n'est pas connecté, rediriger vers la page de connexion
-  if (!userType) {
+  // Si l'utilisateur n'est pas une pharmacie ou un admin, rediriger vers la page de connexion
+  if (userType !== 'pharmacy' && userType !== 'admin') {
+    return <Navigate to="/login" />;
+  }
+  
+  return <>{children}</>;
+};
+
+// Composant pour protéger les routes d'administration
+const ProtectedAdminRoute = ({ children }: { children: React.ReactNode }) => {
+  const userType = localStorage.getItem('userType');
+  
+  // Si l'utilisateur n'est pas un admin, rediriger
+  if (userType !== 'admin') {
     return <Navigate to="/login" />;
   }
   
@@ -34,17 +46,13 @@ const App = () => {
   return (
     <Router>
       <Routes>
+        {/* Routes publiques accessibles à tous */}
         <Route path="/" element={<Index />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/about" element={<About />} />
         <Route path="/pharmacy-register" element={<PharmacyRegister />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/account" element={
-          <ProtectedRoute>
-            <UserAccount />
-          </ProtectedRoute>
-        } />
         <Route path="/medicines" element={<MedicinesPage />} />
         <Route path="/pharmacies" element={<PharmaciesPage />} />
         <Route path="/search" element={<SearchPage />} />
@@ -53,6 +61,11 @@ const App = () => {
         <Route path="/click-collect" element={<ClickCollectPage />} />
         <Route path="/pharmacy-signup" element={<PharmacySignupPage />} />
         <Route path="/faq" element={<FAQPage />} />
+        
+        {/* Route protégée pour l'espace personnel */}
+        <Route path="/account" element={<UserAccount />} />
+        
+        {/* Route générique pour les URLs non trouvées */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>

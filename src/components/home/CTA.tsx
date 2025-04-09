@@ -6,15 +6,16 @@ import { useNavigate } from "react-router-dom";
 interface CTAButtonProps {
   text: string;
   path: string;
+  className?: string;
 }
 
-const CTAButton = ({ text, path }: CTAButtonProps) => {
+const CTAButton = ({ text, path, className }: CTAButtonProps) => {
   const navigate = useNavigate();
   
   return (
     <Button
       size="lg"
-      className="bg-benin-green hover:bg-benin-green/90 text-white transition-all hover:shadow-md"
+      className={className}
       onClick={() => navigate(path)}
     >
       {text}
@@ -41,9 +42,21 @@ const CTA = () => {
             PharmaBenin est la plateforme qu'il vous faut.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <CTAButton text="Se connecter" path="/login" />
-            <CTAButton text="Créer un compte" path="/register" />
-            <CTAButton text="Inscrire ma pharmacie" path="/pharmacy-signup" />
+            <CTAButton 
+              text="Se connecter" 
+              path="/login" 
+              className="bg-white text-benin-green hover:bg-white/90 hover:text-benin-green/90 transition-all hover:shadow-md"
+            />
+            <CTAButton 
+              text="Créer un compte" 
+              path="/register" 
+              className="bg-medical-medium hover:bg-medical-medium/90 text-white transition-all hover:shadow-md"
+            />
+            <CTAButton 
+              text="Inscrire ma pharmacie" 
+              path="/pharmacy-signup" 
+              className="bg-benin-yellow hover:bg-benin-yellow/90 text-benin-green transition-all hover:shadow-md"
+            />
           </div>
         </div>
       </div>
