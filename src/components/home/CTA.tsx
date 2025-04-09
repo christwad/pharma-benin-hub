@@ -15,7 +15,8 @@ const CTAButton = ({ text, path, className }: CTAButtonProps) => {
   return (
     <Button
       size="lg"
-      className={`bg-white text-benin-green hover:bg-white/90 hover:text-benin-green/90 ${className}`}
+      variant="outline"
+      className={`border-benin-green text-benin-green hover:bg-benin-green hover:text-white ${className}`}
       onClick={() => navigate(path)}
     >
       {text}
@@ -45,17 +46,17 @@ const CTA = () => {
             <CTAButton 
               text="Se connecter" 
               path="/login" 
-              className="bg-white text-benin-green hover:bg-white/90 hover:text-benin-green/90 transition-all hover:shadow-md"
+              className="bg-white hover:bg-benin-green hover:text-white transition-all"
             />
             <CTAButton 
               text="Créer un compte" 
               path="/register" 
-              className="bg-white text-benin-green hover:bg-white/90 hover:text-benin-green/90 transition-all hover:shadow-md"
+              className="bg-white hover:bg-benin-green hover:text-white transition-all"
             />
             <CTAButton 
               text="Inscrire ma pharmacie" 
               path="/pharmacy-signup" 
-              className="bg-white text-benin-green hover:bg-white/90 hover:text-benin-green/90 transition-all hover:shadow-md"
+              className="bg-white hover:bg-benin-green hover:text-white transition-all"
             />
           </div>
         </div>
@@ -65,4 +66,3 @@ const CTA = () => {
 };
 
 export default CTA;
-

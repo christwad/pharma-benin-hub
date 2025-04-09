@@ -50,7 +50,8 @@ const Hero = () => {
             <Button 
               type="submit" 
               size="lg"
-              className="bg-white text-benin-green hover:bg-white/90 hover:text-benin-green/90"
+              variant="outline"
+              className="border-benin-green text-benin-green hover:bg-benin-green hover:text-white"
             >
               Rechercher
             </Button>
@@ -59,7 +60,7 @@ const Hero = () => {
           <div className="flex flex-wrap justify-center gap-4">
             <Button 
               variant="outline" 
-              className="bg-white border-benin-green text-benin-green hover:bg-white/90 hover:text-benin-green/90 transition-colors gap-2" 
+              className="border-benin-green text-benin-green hover:bg-benin-green hover:text-white transition-colors gap-2" 
               onClick={() => navigate("/pharmacies")}
             >
               <MapPin className="h-4 w-4" />
@@ -67,7 +68,7 @@ const Hero = () => {
             </Button>
             <Button 
               variant="outline" 
-              className="bg-white border-benin-green text-benin-green hover:bg-white/90 hover:text-benin-green/90 transition-colors"
+              className="border-benin-green text-benin-green hover:bg-benin-green hover:text-white transition-colors"
               onClick={() => navigate("/medicines")}
             >
               Voir les médicaments
