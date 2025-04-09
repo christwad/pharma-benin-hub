@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -15,7 +14,7 @@ const CTAButton = ({ text, path, className }: CTAButtonProps) => {
   return (
     <Button
       size="lg"
-      className={className}
+      className={`bg-white text-benin-green hover:bg-white/90 hover:text-benin-green/90 ${className}`}
       onClick={() => navigate(path)}
     >
       {text}
