@@ -44,17 +44,12 @@ const CTA = () => {
           </p>
           <div className="flex flex-wrap justify-center gap-6">
             <CTAButton 
-              text="Connexion client" 
+              text="Espace Client" 
               path="/login" 
               className="bg-white hover:bg-benin-green hover:text-white transition-all"
             />
             <CTAButton 
-              text="Créer un compte client" 
-              path="/register" 
-              className="bg-white hover:bg-benin-green hover:text-white transition-all"
-            />
-            <CTAButton 
-              text="Espace pharmacie" 
+              text="Espace Pharmacie" 
               path="/pharmacy-signup" 
               className="bg-white hover:bg-benin-green hover:text-white transition-all"
             />

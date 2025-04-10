@@ -23,6 +23,7 @@ import AdminDashboard from '@/pages/AdminDashboard';
 import PharmacyDashboard from '@/pages/PharmacyDashboard';
 import PharmacySubscriptionPage from '@/pages/PharmacySubscriptionPage';
 import AdminLogin from '@/pages/AdminLogin';
+import ClientDashboard from '@/pages/ClientDashboard';
 
 // Composant pour rediriger si l'utilisateur n'est pas authentifié
 const RequireAuth = ({ children }: { children: React.ReactNode }) => {
@@ -55,6 +56,18 @@ const ProtectedAdminRoute = ({ children }: { children: React.ReactNode }) => {
   // Si l'utilisateur n'est pas un admin, rediriger
   if (userType !== 'admin') {
     return <Navigate to="/admin-login" />;
+  }
+  
+  return <>{children}</>;
+};
+
+// Composant pour protéger les routes client
+const ProtectedClientRoute = ({ children }: { children: React.ReactNode }) => {
+  const userType = localStorage.getItem('userType');
+  
+  // Si l'utilisateur n'est pas un client, rediriger
+  if (userType !== 'client') {
+    return <Navigate to="/login" />;
   }
   
   return <>{children}</>;
@@ -107,12 +120,22 @@ const App = () => {
           } 
         />
         
-        {/* Route protégée pour l'espace personnel */}
+        {/* Route protégée pour l'espace client */}
+        <Route 
+          path="/client-dashboard" 
+          element={
+            <ProtectedClientRoute>
+              <ClientDashboard />
+            </ProtectedClientRoute>
+          } 
+        />
+        
+        {/* Route protégée pour l'espace personnel (dépréciée, à rediriger) */}
         <Route 
           path="/account" 
           element={
             <RequireAuth>
-              <UserAccount />
+              <Navigate to="/client-dashboard" replace />
             </RequireAuth>
           } 
         />
