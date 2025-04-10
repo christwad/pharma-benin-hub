@@ -19,6 +19,9 @@ import PharmacySignupPage from '@/pages/PharmacySignupPage';
 import PharmacyVerificationPage from '@/pages/PharmacyVerificationPage';
 import PharmacyVerificationSuccessPage from '@/pages/PharmacyVerificationSuccessPage';
 import FAQPage from '@/pages/FAQPage';
+import AdminDashboard from '@/pages/AdminDashboard';
+import PharmacyDashboard from '@/pages/PharmacyDashboard';
+import PharmacySubscriptionPage from '@/pages/PharmacySubscriptionPage';
 
 // Composant pour rediriger si l'utilisateur n'est pas une pharmacie ou un admin
 const ProtectedPharmacyRoute = ({ children }: { children: React.ReactNode }) => {
@@ -65,9 +68,30 @@ const App = () => {
         <Route path="/pharmacy-verification" element={<PharmacyVerificationPage />} />
         <Route path="/pharmacy-verification-success" element={<PharmacyVerificationSuccessPage />} />
         <Route path="/faq" element={<FAQPage />} />
+        <Route path="/pharmacy-subscription" element={<PharmacySubscriptionPage />} />
         
         {/* Route protégée pour l'espace personnel */}
         <Route path="/account" element={<UserAccount />} />
+        
+        {/* Route protégée pour le dashboard pharmacie */}
+        <Route 
+          path="/pharmacy-dashboard" 
+          element={
+            <ProtectedPharmacyRoute>
+              <PharmacyDashboard />
+            </ProtectedPharmacyRoute>
+          } 
+        />
+        
+        {/* Route protégée pour l'administration */}
+        <Route 
+          path="/admin" 
+          element={
+            <ProtectedAdminRoute>
+              <AdminDashboard />
+            </ProtectedAdminRoute>
+          } 
+        />
         
         {/* Route générique pour les URLs non trouvées */}
         <Route path="*" element={<NotFound />} />
