@@ -16,6 +16,8 @@ import NotFound from '@/pages/NotFound';
 import DeliveryPage from '@/pages/DeliveryPage';
 import ClickCollectPage from '@/pages/ClickCollectPage';
 import PharmacySignupPage from '@/pages/PharmacySignupPage';
+import PharmacyVerificationPage from '@/pages/PharmacyVerificationPage';
+import PharmacyVerificationSuccessPage from '@/pages/PharmacyVerificationSuccessPage';
 import FAQPage from '@/pages/FAQPage';
 
 // Composant pour rediriger si l'utilisateur n'est pas une pharmacie ou un admin
@@ -60,6 +62,8 @@ const App = () => {
         <Route path="/delivery" element={<DeliveryPage />} />
         <Route path="/click-collect" element={<ClickCollectPage />} />
         <Route path="/pharmacy-signup" element={<PharmacySignupPage />} />
+        <Route path="/pharmacy-verification" element={<PharmacyVerificationPage />} />
+        <Route path="/pharmacy-verification-success" element={<PharmacyVerificationSuccessPage />} />
         <Route path="/faq" element={<FAQPage />} />
         
         {/* Route protégée pour l'espace personnel */}

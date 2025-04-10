@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,17 +9,93 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CheckSquare, Building2, Users, TrendingUp, HeartHandshake } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { useNavigate } from "react-router-dom";
 
 const PharmacySignupPage = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [verificationMethod, setVerificationMethod] = useState("email");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setFormSubmitted(true);
     toast({
       title: "Demande envoyée avec succès",
-      description: "Notre équipe vous contactera dans les plus brefs délais pour finaliser votre inscription.",
+      description: "Veuillez vérifier votre email ou téléphone pour confirmer votre identité.",
     });
   };
+
+  const handleVerificationMethodChange = (value: string) => {
+    setVerificationMethod(value);
+  };
+
+  const handleProceedToVerification = () => {
+    navigate("/pharmacy-verification");
+  };
+
+  // Si le formulaire a été soumis, afficher l'écran de confirmation
+  if (formSubmitted) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-12">
+          <div className="max-w-md mx-auto">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-center">Vérification requise</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="text-center">
+                  <div className="bg-green-100 text-green-800 p-4 rounded-md mb-6">
+                    <p className="font-medium">Votre demande a été enregistrée avec succès!</p>
+                    <p className="mt-2">Pour finaliser votre inscription, vous devez vérifier votre identité.</p>
+                  </div>
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Méthode de vérification</Label>
+                    <Select value={verificationMethod} onValueChange={handleVerificationMethodChange}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Choisir une méthode" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="email">Vérification par email</SelectItem>
+                        <SelectItem value="sms">Vérification par SMS</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  {verificationMethod === "email" && (
+                    <div className="bg-blue-50 p-4 rounded">
+                      <p className="text-sm">Un code de vérification a été envoyé à l'adresse email que vous avez fournie.</p>
+                      <p className="text-sm mt-1">Veuillez vérifier votre boîte de réception et vos spams.</p>
+                    </div>
+                  )}
+                  
+                  {verificationMethod === "sms" && (
+                    <div className="bg-blue-50 p-4 rounded">
+                      <p className="text-sm">Un code de vérification sera envoyé par SMS au numéro de téléphone que vous avez fourni.</p>
+                      <p className="text-sm mt-1">Le message peut prendre quelques minutes pour arriver.</p>
+                    </div>
+                  )}
+                  
+                  <Button className="w-full bg-benin-green hover:bg-benin-green/90" onClick={handleProceedToVerification}>
+                    Continuer vers la vérification
+                  </Button>
+                  
+                  <p className="text-xs text-center text-gray-500 mt-4">
+                    Après vérification de votre identité, votre demande sera examinée par notre équipe administrative. 
+                    Vous recevrez une notification une fois votre compte approuvé.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
