@@ -22,6 +22,19 @@ import FAQPage from '@/pages/FAQPage';
 import AdminDashboard from '@/pages/AdminDashboard';
 import PharmacyDashboard from '@/pages/PharmacyDashboard';
 import PharmacySubscriptionPage from '@/pages/PharmacySubscriptionPage';
+import AdminLogin from '@/pages/AdminLogin';
+
+// Composant pour rediriger si l'utilisateur n'est pas authentifié
+const RequireAuth = ({ children }: { children: React.ReactNode }) => {
+  const userType = localStorage.getItem('userType');
+  
+  // Si l'utilisateur n'est pas connecté, rediriger vers la page de connexion
+  if (!userType) {
+    return <Navigate to="/login" />;
+  }
+  
+  return <>{children}</>;
+};
 
 // Composant pour rediriger si l'utilisateur n'est pas une pharmacie ou un admin
 const ProtectedPharmacyRoute = ({ children }: { children: React.ReactNode }) => {
@@ -41,7 +54,7 @@ const ProtectedAdminRoute = ({ children }: { children: React.ReactNode }) => {
   
   // Si l'utilisateur n'est pas un admin, rediriger
   if (userType !== 'admin') {
-    return <Navigate to="/login" />;
+    return <Navigate to="/admin-login" />;
   }
   
   return <>{children}</>;
@@ -61,17 +74,48 @@ const App = () => {
         <Route path="/medicines" element={<MedicinesPage />} />
         <Route path="/pharmacies" element={<PharmaciesPage />} />
         <Route path="/search" element={<SearchPage />} />
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/delivery" element={<DeliveryPage />} />
-        <Route path="/click-collect" element={<ClickCollectPage />} />
         <Route path="/pharmacy-signup" element={<PharmacySignupPage />} />
         <Route path="/pharmacy-verification" element={<PharmacyVerificationPage />} />
         <Route path="/pharmacy-verification-success" element={<PharmacyVerificationSuccessPage />} />
         <Route path="/faq" element={<FAQPage />} />
         <Route path="/pharmacy-subscription" element={<PharmacySubscriptionPage />} />
+        <Route path="/admin-login" element={<AdminLogin />} />
+        
+        {/* Routes nécessitant une authentification */}
+        <Route 
+          path="/cart" 
+          element={
+            <RequireAuth>
+              <CartPage />
+            </RequireAuth>
+          } 
+        />
+        <Route 
+          path="/delivery" 
+          element={
+            <RequireAuth>
+              <DeliveryPage />
+            </RequireAuth>
+          } 
+        />
+        <Route 
+          path="/click-collect" 
+          element={
+            <RequireAuth>
+              <ClickCollectPage />
+            </RequireAuth>
+          } 
+        />
         
         {/* Route protégée pour l'espace personnel */}
-        <Route path="/account" element={<UserAccount />} />
+        <Route 
+          path="/account" 
+          element={
+            <RequireAuth>
+              <UserAccount />
+            </RequireAuth>
+          } 
+        />
         
         {/* Route protégée pour le dashboard pharmacie */}
         <Route 
