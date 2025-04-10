@@ -13,16 +13,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
-import { User, Landmark, Lock, Mail, AlertCircle, ShoppingCart } from "lucide-react";
+import { User, Landmark, Lock, Mail, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const Login = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState("pharmacy");
   const [loginError, setLoginError] = useState<string | null>(null);
 
   // Pharmacy form state
@@ -88,14 +86,6 @@ const Login = () => {
     }, 1500);
   };
 
-  const handleContinueAsBuyer = () => {
-    toast({
-      title: "Accès visiteur",
-      description: "Vous naviguez en tant que visiteur. Vous pouvez explorer et commander sans compte.",
-    });
-    navigate("/medicines");
-  };
-
   return (
     <Layout>
       <div className="container mx-auto px-4 py-12 bg-gradient-to-b from-medical-light/30 to-transparent rounded-lg">
@@ -114,29 +104,6 @@ const Login = () => {
               <AlertDescription>{loginError}</AlertDescription>
             </Alert>
           )}
-
-          <div className="bg-white p-6 rounded-lg shadow-md mb-8">
-            <div className="text-center space-y-4">
-              <ShoppingCart className="mx-auto h-12 w-12 text-benin-green" />
-              <h2 className="text-xl font-semibold text-benin-green">Acheter sans compte</h2>
-              <p className="text-gray-600">
-                Les clients peuvent explorer notre catalogue et passer commande sans créer de compte.
-              </p>
-              <Button
-                onClick={handleContinueAsBuyer}
-                className="w-full bg-benin-green hover:bg-benin-green/90"
-              >
-                Explorer le catalogue
-              </Button>
-            </div>
-          </div>
-
-          <div className="text-center mb-6">
-            <h2 className="text-xl font-semibold text-benin-green">Espace Pharmacies & Admin</h2>
-            <p className="text-gray-600">
-              Réservé aux pharmacies partenaires et administrateurs
-            </p>
-          </div>
 
           <Card className="border-benin-green/20 shadow-lg">
             <CardHeader className="bg-gradient-to-r from-benin-green/10 to-medical-medium/10 rounded-t-lg">

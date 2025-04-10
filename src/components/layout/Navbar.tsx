@@ -8,7 +8,8 @@ import {
   Menu, 
   X, 
   User,
-  LogIn
+  LogIn,
+  Shield
 } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -107,6 +108,12 @@ const Navbar = () => {
               <span>Connexion Pharmacie</span>
             </Button>
           </Link>
+          <Link to="/admin-login">
+            <Button variant="outline" size="sm" className="hidden md:flex gap-2 border-gray-300 text-gray-700 hover:bg-gray-100">
+              <Shield className="h-4 w-4" />
+              <span>Admin</span>
+            </Button>
+          </Link>
 
           {/* Mobile menu button */}
           {isMobile && (
@@ -141,6 +148,16 @@ const Navbar = () => {
                       <Button variant="outline" className="w-full justify-start gap-2 border-benin-green text-benin-green hover:bg-benin-green hover:text-white">
                         <LogIn className="h-4 w-4" />
                         <span>Connexion Pharmacie</span>
+                      </Button>
+                    </Link>
+                    <Link 
+                      to="/admin-login" 
+                      onClick={() => setIsMenuOpen(false)}
+                      className="w-full"
+                    >
+                      <Button variant="outline" className="w-full justify-start gap-2 border-gray-300 text-gray-700 hover:bg-gray-100">
+                        <Shield className="h-4 w-4" />
+                        <span>Admin</span>
                       </Button>
                     </Link>
                   </div>

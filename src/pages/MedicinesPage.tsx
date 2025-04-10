@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { Input } from "@/components/ui/input";
@@ -29,75 +28,8 @@ const MedicinesPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
 
-  // Sample data - in a real app, this would come from an API
-  const medicines: Medicine[] = [
-    {
-      id: 1,
-      name: "Paracétamol 500mg",
-      description: "Analgésique et antipyrétique pour le soulagement de la douleur légère à modérée",
-      price: 1500,
-      image: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?q=80&w=2830&auto=format&fit=crop",
-      category: "Analgésiques",
-      stock: 45,
-      pharmacy: "Pharmacie Centrale",
-      rating: 4.5
-    },
-    {
-      id: 2,
-      name: "Amoxicilline 250mg",
-      description: "Antibiotique à large spectre pour traiter diverses infections bactériennes",
-      price: 3500,
-      image: "https://images.unsplash.com/photo-1550572017-4fcdbb59cc32?q=80&w=2787&auto=format&fit=crop",
-      category: "Antibiotiques",
-      stock: 28,
-      pharmacy: "Pharmacie du Port",
-      rating: 4.2
-    },
-    {
-      id: 3,
-      name: "Ibuprofène 400mg",
-      description: "Anti-inflammatoire non stéroïdien pour réduire la douleur et l'inflammation",
-      price: 1800,
-      image: "https://images.unsplash.com/photo-1587854692152-cbe660dbde88?q=80&w=2369&auto=format&fit=crop",
-      category: "Anti-inflammatoires",
-      stock: 0,
-      pharmacy: "Pharmacie Moderne",
-      rating: 4.0
-    },
-    {
-      id: 4,
-      name: "Loratadine 10mg",
-      description: "Antihistaminique pour le soulagement des symptômes d'allergie",
-      price: 2000,
-      image: "https://images.unsplash.com/photo-1579165466991-467135ad3110?q=80&w=2574&auto=format&fit=crop",
-      category: "Antihistaminiques",
-      stock: 15,
-      pharmacy: "Pharmacie Centrale",
-      rating: 4.3
-    },
-    {
-      id: 5,
-      name: "Oméprazole 20mg",
-      description: "Inhibiteur de la pompe à protons pour réduire l'acide gastrique",
-      price: 2500,
-      image: "https://images.unsplash.com/photo-1631549916768-4119b4123487?q=80&w=2679&auto=format&fit=crop",
-      category: "Gastro-intestinaux",
-      stock: 22,
-      pharmacy: "Pharmacie du Port",
-      rating: 4.7
-    },
-    {
-      id: 6,
-      name: "Metformine 500mg",
-      description: "Médicament antidiabétique pour contrôler la glycémie",
-      price: 1900,
-      image: "https://images.unsplash.com/photo-1558956397-7f6aea7aaab4?q=80&w=2574&auto=format&fit=crop",
-      category: "Diabète",
-      stock: 35,
-      pharmacy: "Pharmacie Moderne",
-      rating: 4.4
-    }
-  ];
+  // Liste vide - les médicaments seront chargés dynamiquement des pharmacies connectées
+  const medicines: Medicine[] = [];
 
   // Get unique categories
   const categories = ["all", ...new Set(medicines.map(medicine => medicine.category))];
@@ -198,59 +130,11 @@ const MedicinesPage = () => {
               </div>
               
               <TabsContent value="grid" className="mt-0">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                  {filteredMedicines.map((medicine) => (
-                    <Card key={medicine.id} className="overflow-hidden flex flex-col h-full">
-                      <div className="relative h-48 bg-gray-100">
-                        <img
-                          src={medicine.image}
-                          alt={medicine.name}
-                          className="w-full h-full object-cover"
-                        />
-                        <div className="absolute top-2 right-2">
-                          <Badge variant={medicine.stock > 0 ? "success" : "destructive"}>
-                            {medicine.stock > 0 ? "En stock" : "Rupture"}
-                          </Badge>
-                        </div>
-                      </div>
-                      <CardHeader className="pb-2">
-                        <div className="flex justify-between items-start">
-                          <CardTitle className="text-lg">{medicine.name}</CardTitle>
-                          <div className="flex items-center">
-                            <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                            <span className="text-sm ml-1">{medicine.rating}</span>
-                          </div>
-                        </div>
-                        <p className="text-sm text-gray-500">{medicine.category}</p>
-                      </CardHeader>
-                      <CardContent className="pb-2 pt-0 flex-grow">
-                        <p className="text-sm text-gray-700 line-clamp-2">{medicine.description}</p>
-                        <p className="mt-2 text-sm">
-                          Vendu par <span className="font-medium">{medicine.pharmacy}</span>
-                        </p>
-                      </CardContent>
-                      <CardFooter className="pt-2 flex justify-between items-center">
-                        <p className="font-bold">{medicine.price} FCFA</p>
-                        <Button 
-                          onClick={() => handleAddToCart(medicine)}
-                          disabled={medicine.stock <= 0}
-                          className={medicine.stock > 0 ? "bg-benin-green hover:bg-benin-green/90" : ""}
-                        >
-                          <Plus className="h-4 w-4 mr-2" />
-                          Ajouter
-                        </Button>
-                      </CardFooter>
-                    </Card>
-                  ))}
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="list" className="mt-0">
-                <div className="space-y-4">
-                  {filteredMedicines.map((medicine) => (
-                    <Card key={medicine.id} className="overflow-hidden">
-                      <div className="flex flex-col sm:flex-row">
-                        <div className="relative h-48 sm:h-auto sm:w-48 bg-gray-100">
+                {filteredMedicines.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    {filteredMedicines.map((medicine) => (
+                      <Card key={medicine.id} className="overflow-hidden flex flex-col h-full">
+                        <div className="relative h-48 bg-gray-100">
                           <img
                             src={medicine.image}
                             alt={medicine.name}
@@ -262,39 +146,109 @@ const MedicinesPage = () => {
                             </Badge>
                           </div>
                         </div>
-                        <div className="flex-1 flex flex-col">
-                          <CardHeader className="pb-2">
-                            <div className="flex justify-between items-start">
-                              <CardTitle>{medicine.name}</CardTitle>
-                              <div className="flex items-center">
-                                <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                                <span className="text-sm ml-1">{medicine.rating}</span>
-                              </div>
+                        <CardHeader className="pb-2">
+                          <div className="flex justify-between items-start">
+                            <CardTitle className="text-lg">{medicine.name}</CardTitle>
+                            <div className="flex items-center">
+                              <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                              <span className="text-sm ml-1">{medicine.rating}</span>
                             </div>
-                            <p className="text-sm text-gray-500">{medicine.category}</p>
-                          </CardHeader>
-                          <CardContent className="pb-2 pt-0 flex-grow">
-                            <p className="text-sm text-gray-700">{medicine.description}</p>
-                            <p className="mt-2 text-sm">
-                              Vendu par <span className="font-medium">{medicine.pharmacy}</span>
-                            </p>
-                          </CardContent>
-                          <CardFooter className="pt-2 flex justify-between items-center">
-                            <p className="font-bold">{medicine.price} FCFA</p>
-                            <Button 
-                              onClick={() => handleAddToCart(medicine)}
-                              disabled={medicine.stock <= 0}
-                              className={medicine.stock > 0 ? "bg-benin-green hover:bg-benin-green/90" : ""}
-                            >
-                              <Plus className="h-4 w-4 mr-2" />
-                              Ajouter
-                            </Button>
-                          </CardFooter>
+                          </div>
+                          <p className="text-sm text-gray-500">{medicine.category}</p>
+                        </CardHeader>
+                        <CardContent className="pb-2 pt-0 flex-grow">
+                          <p className="text-sm text-gray-700 line-clamp-2">{medicine.description}</p>
+                          <p className="mt-2 text-sm">
+                            Vendu par <span className="font-medium">{medicine.pharmacy}</span>
+                          </p>
+                        </CardContent>
+                        <CardFooter className="pt-2 flex justify-between items-center">
+                          <p className="font-bold">{medicine.price} FCFA</p>
+                          <Button 
+                            onClick={() => handleAddToCart(medicine)}
+                            disabled={medicine.stock <= 0}
+                            className={medicine.stock > 0 ? "bg-benin-green hover:bg-benin-green/90" : ""}
+                          >
+                            <Plus className="h-4 w-4 mr-2" />
+                            Ajouter
+                          </Button>
+                        </CardFooter>
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-16 bg-gray-50 rounded-lg">
+                    <Search className="h-16 w-16 mx-auto text-gray-300 mb-4" />
+                    <h3 className="text-xl font-medium text-gray-800 mb-2">Aucun médicament disponible</h3>
+                    <p className="text-gray-600 mb-6 max-w-lg mx-auto">
+                      Les pharmacies partenaires n'ont pas encore ajouté de médicaments à leur catalogue.
+                      Revenez bientôt pour découvrir notre sélection.
+                    </p>
+                  </div>
+                )}
+              </TabsContent>
+              
+              <TabsContent value="list" className="mt-0">
+                {filteredMedicines.length > 0 ? (
+                  <div className="space-y-4">
+                    {filteredMedicines.map((medicine) => (
+                      <Card key={medicine.id} className="overflow-hidden">
+                        <div className="flex flex-col sm:flex-row">
+                          <div className="relative h-48 sm:h-auto sm:w-48 bg-gray-100">
+                            <img
+                              src={medicine.image}
+                              alt={medicine.name}
+                              className="w-full h-full object-cover"
+                            />
+                            <div className="absolute top-2 right-2">
+                              <Badge variant={medicine.stock > 0 ? "success" : "destructive"}>
+                                {medicine.stock > 0 ? "En stock" : "Rupture"}
+                              </Badge>
+                            </div>
+                          </div>
+                          <div className="flex-1 flex flex-col">
+                            <CardHeader className="pb-2">
+                              <div className="flex justify-between items-start">
+                                <CardTitle>{medicine.name}</CardTitle>
+                                <div className="flex items-center">
+                                  <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                                  <span className="text-sm ml-1">{medicine.rating}</span>
+                                </div>
+                              </div>
+                              <p className="text-sm text-gray-500">{medicine.category}</p>
+                            </CardHeader>
+                            <CardContent className="pb-2 pt-0 flex-grow">
+                              <p className="text-sm text-gray-700">{medicine.description}</p>
+                              <p className="mt-2 text-sm">
+                                Vendu par <span className="font-medium">{medicine.pharmacy}</span>
+                              </p>
+                            </CardContent>
+                            <CardFooter className="pt-2 flex justify-between items-center">
+                              <p className="font-bold">{medicine.price} FCFA</p>
+                              <Button 
+                                onClick={() => handleAddToCart(medicine)}
+                                disabled={medicine.stock <= 0}
+                                className={medicine.stock > 0 ? "bg-benin-green hover:bg-benin-green/90" : ""}
+                              >
+                                <Plus className="h-4 w-4 mr-2" />
+                                Ajouter
+                              </Button>
+                            </CardFooter>
+                          </div>
                         </div>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-16 bg-gray-50 rounded-lg">
+                    <Search className="h-16 w-16 mx-auto text-gray-300 mb-4" />
+                    <h3 className="text-xl font-medium text-gray-800 mb-2">Aucun médicament disponible</h3>
+                    <p className="text-gray-600 mb-6 max-w-lg mx-auto">
+                      Les pharmacies partenaires n'ont pas encore ajouté de médicaments à leur catalogue.
+                      Revenez bientôt pour découvrir notre sélection.
+                    </p>
+                  </div>
+                )}
               </TabsContent>
             </Tabs>
           </div>
