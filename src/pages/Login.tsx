@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
@@ -19,6 +18,7 @@ import { User, Landmark, Lock, Mail, AlertCircle, ExternalLink } from "lucide-re
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useAuth } from "@/contexts/AuthContext";
 import { isConfigMissing } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase";
 
 const Login = () => {
   const { toast } = useToast();
@@ -32,6 +32,15 @@ const Login = () => {
     if (user) {
       navigate('/client-dashboard');
     }
+
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        navigate('/client-dashboard');
+      }
+    };
+    
+    checkSession();
   }, [user, navigate]);
 
   const [loginForm, setLoginForm] = useState({
@@ -87,17 +96,12 @@ const Login = () => {
     setIsLoading(true);
     setLoginError(null);
 
-    // Vérifier si Supabase est configuré
-    if (isConfigMissing) {
-      setLoginError("Supabase n'est pas configuré. Veuillez connecter votre projet à Supabase via le bouton vert en haut à droite.");
-      setIsLoading(false);
-      return;
-    }
-
     try {
+      console.log("Tentative de connexion avec:", loginForm.email);
       const { error } = await signIn(loginForm.email, loginForm.password);
       
       if (error) {
+        console.error("Erreur de connexion:", error);
         setLoginError(error.message || "Email ou mot de passe incorrect");
         toast({
           title: "Échec de la connexion",
@@ -112,6 +116,7 @@ const Login = () => {
         navigate("/client-dashboard");
       }
     } catch (error: any) {
+      console.error("Exception lors de la connexion:", error);
       setLoginError(error.message || "Une erreur s'est produite lors de la connexion");
       toast({
         title: "Erreur",
@@ -127,13 +132,6 @@ const Login = () => {
     e.preventDefault();
     setIsLoading(true);
     setLoginError(null);
-
-    // Vérifier si Supabase est configuré
-    if (isConfigMissing) {
-      setLoginError("Supabase n'est pas configuré. Veuillez connecter votre projet à Supabase via le bouton vert en haut à droite.");
-      setIsLoading(false);
-      return;
-    }
 
     if (registerForm.password !== registerForm.confirmPassword) {
       setIsLoading(false);
@@ -202,7 +200,6 @@ const Login = () => {
     setIsLoading(true);
     setLoginError(null);
 
-    // Vérifier si Supabase est configuré
     if (isConfigMissing) {
       setLoginError("Supabase n'est pas configuré. Veuillez connecter votre projet à Supabase via le bouton vert en haut à droite.");
       setIsLoading(false);
