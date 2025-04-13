@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -16,12 +16,14 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { Shield, Lock, Mail, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useAuth } from "@/contexts/AuthContext";
 
 const AdminLogin = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
+  const { signIn, profile, user } = useAuth();
 
   // Admin form state
   const [adminForm, setAdminForm] = useState({
@@ -29,6 +31,13 @@ const AdminLogin = () => {
     password: "",
     rememberMe: false,
   });
+
+  // Rediriger si l'utilisateur est déjà connecté en tant qu'admin
+  useEffect(() => {
+    if (user && profile?.role === 'admin') {
+      navigate('/admin');
+    }
+  }, [user, profile, navigate]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -41,37 +50,38 @@ const AdminLogin = () => {
     setLoginError(null);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setLoginError(null);
 
-    // Simuler l'appel API
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const { error } = await signIn(adminForm.email, adminForm.password);
       
-      // Demo login - dans une application réelle, cela validerait les informations d'identification avec un backend
-      if (adminForm.email === "admin@example.com" && adminForm.password === "adminpass") {
-        // Définir le type d'utilisateur dans localStorage pour limiter l'accès
-        localStorage.setItem("userType", "admin");
-        localStorage.setItem("userEmail", adminForm.email);
-        
-        toast({
-          title: "Connexion administrateur réussie!",
-          description: "Bienvenue sur le panneau d'administration.",
-        });
-        
-        // Rediriger vers le tableau de bord d'administration
-        navigate("/admin");
-      } else {
-        setLoginError("Email ou mot de passe incorrect.");
+      if (error) {
+        setLoginError(error.message || "Email ou mot de passe incorrect");
         toast({
           title: "Échec de la connexion",
-          description: "Email ou mot de passe incorrect.",
+          description: error.message || "Email ou mot de passe incorrect",
           variant: "destructive",
         });
+      } else {
+        // La vérification du rôle se fait dans le useEffect
+        toast({
+          title: "Connexion réussie!",
+          description: "Bienvenue sur le panneau d'administration.",
+        });
       }
-    }, 1500);
+    } catch (error: any) {
+      setLoginError(error.message || "Une erreur s'est produite lors de la connexion");
+      toast({
+        title: "Erreur",
+        description: error.message || "Une erreur s'est produite lors de la connexion",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

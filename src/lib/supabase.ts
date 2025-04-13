@@ -7,8 +7,22 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 // Vérification des variables d'environnement requises
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('Supabase URL or Anon Key is missing. Please set the VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables.');
+if (!supabaseUrl || !supabaseAnonKey || 
+    supabaseUrl === "https://your-real-supabase-url.supabase.co" || 
+    supabaseAnonKey === "your-real-supabase-anon-key") {
+  console.error(`
+    ===== ERREUR DE CONFIGURATION SUPABASE =====
+    Les variables d'environnement Supabase ne sont pas correctement configurées.
+    
+    Pour résoudre ce problème :
+    1. Cliquez sur le bouton vert Supabase en haut à droite de l'interface.
+    2. Connectez votre projet à Supabase.
+    3. Les variables d'environnement seront automatiquement configurées.
+    
+    Sans cette configuration, les fonctionnalités comme l'authentification, 
+    la base de données et le stockage ne fonctionneront pas.
+    =========================================
+  `);
 }
 
 // Création d'un client Supabase factice si les variables sont manquantes
@@ -26,16 +40,35 @@ try {
   // Crée un client factice avec des méthodes pour éviter les erreurs
   supabase = {
     auth: {
-      signUp: () => Promise.resolve({ error: { message: 'Supabase not configured' } }),
-      signInWithPassword: () => Promise.resolve({ error: { message: 'Supabase not configured' } }),
-      signOut: () => Promise.resolve({ error: { message: 'Supabase not configured' } }),
+      signUp: () => Promise.resolve({ 
+        error: { message: 'Supabase non configuré. Cliquez sur le bouton Supabase en haut à droite pour connecter votre projet.' },
+        data: null 
+      }),
+      signInWithPassword: () => Promise.resolve({ 
+        error: { message: 'Supabase non configuré. Cliquez sur le bouton Supabase en haut à droite pour connecter votre projet.' },
+        data: null 
+      }),
+      signOut: () => Promise.resolve({ error: null }),
       getSession: () => Promise.resolve({ data: { session: null } }),
-      onAuthStateChange: () => ({ data: null, error: null })
+      onAuthStateChange: () => ({ 
+        data: { subscription: { unsubscribe: () => {} } }, 
+        error: null 
+      })
     },
     from: () => ({
       select: () => ({
-        eq: () => Promise.resolve({ data: [], error: { message: 'Supabase not configured' } }),
-        single: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured' } })
+        eq: () => Promise.resolve({ 
+          data: [], 
+          error: { message: 'Supabase non configuré. Cliquez sur le bouton Supabase en haut à droite pour connecter votre projet.' } 
+        }),
+        single: () => Promise.resolve({ 
+          data: null, 
+          error: { message: 'Supabase non configuré. Cliquez sur le bouton Supabase en haut à droite pour connecter votre projet.' } 
+        })
+      }),
+      insert: () => Promise.resolve({
+        data: null,
+        error: { message: 'Supabase non configuré. Cliquez sur le bouton Supabase en haut à droite pour connecter votre projet.' }
       })
     })
   } as unknown as ReturnType<typeof createClient<Database>>;
