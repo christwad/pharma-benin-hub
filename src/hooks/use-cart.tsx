@@ -20,6 +20,7 @@ export type CartContextType = {
   clearCart: () => void;
   getItemsCount: () => number;
   getTotalPrice: () => number;
+  cartCount: number; // Ajout de cartCount pour résoudre l'erreur TS2339
 };
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -33,6 +34,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
     return [];
   });
+  
+  // Calculer le nombre d'articles dans le panier
+  const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
   // Save to localStorage whenever cart changes
   useEffect(() => {
@@ -92,7 +96,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       updateQuantity, 
       clearCart,
       getItemsCount,
-      getTotalPrice
+      getTotalPrice,
+      cartCount // Ajout du cartCount calculé
     }}>
       {children}
     </CartContext.Provider>
