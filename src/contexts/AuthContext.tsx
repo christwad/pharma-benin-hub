@@ -1,6 +1,6 @@
 
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabase, isConfigMissing, configErrorMessage } from '@/lib/supabase';
 import { Session, User } from '@supabase/supabase-js';
 import { Tables } from '@/types/supabase';
 import { useToast } from '@/components/ui/use-toast';
@@ -14,6 +14,7 @@ type AuthContextType = {
   signUp: (email: string, password: string, userDetails: { full_name: string; phone_number: string; role: 'client' | 'pharmacist' | 'admin' }) => Promise<{ error: any | null }>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
+  isSupabaseConfigured: boolean;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -29,6 +30,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Récupérer la session initiale
     const getInitialSession = async () => {
       setLoading(true);
+
+      // Vérifier si la configuration Supabase est manquante
+      if (isConfigMissing) {
+        console.warn("Supabase n'est pas configuré. L'authentification ne fonctionnera pas correctement.");
+        setLoading(false);
+        return;
+      }
 
       const { data: { session } } = await supabase.auth.getSession();
 
@@ -93,6 +101,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Connexion
   const signIn = async (email: string, password: string) => {
     try {
+      // Vérifier si Supabase est configuré
+      if (isConfigMissing) {
+        return { 
+          error: { 
+            message: 'Configuration Supabase manquante. Veuillez connecter votre projet à Supabase via le bouton vert en haut à droite.' 
+          } 
+        };
+      }
+
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -115,6 +132,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     userDetails: { full_name: string; phone_number: string; role: 'client' | 'pharmacist' | 'admin' }
   ) => {
     try {
+      // Vérifier si Supabase est configuré
+      if (isConfigMissing) {
+        return { 
+          error: { 
+            message: 'Configuration Supabase manquante. Veuillez connecter votre projet à Supabase via le bouton vert en haut à droite.' 
+          } 
+        };
+      }
+
       // 1. Créer l'utilisateur dans Auth
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -144,6 +170,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       return { error: null };
     } catch (error) {
+      console.error('Erreur inattendue lors de l\'inscription:', error);
       return { error };
     }
   };
@@ -162,6 +189,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     signUp,
     signOut,
     refreshProfile,
+    isSupabaseConfigured: !isConfigMissing,
   };
 
   return (

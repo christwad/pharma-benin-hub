@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
@@ -14,9 +15,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
-import { User, Landmark, Lock, Mail, AlertCircle } from "lucide-react";
+import { User, Landmark, Lock, Mail, AlertCircle, ExternalLink } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useAuth } from "@/contexts/AuthContext";
+import { isConfigMissing } from "@/lib/supabase";
 
 const Login = () => {
   const { toast } = useToast();
@@ -85,6 +87,13 @@ const Login = () => {
     setIsLoading(true);
     setLoginError(null);
 
+    // Vérifier si Supabase est configuré
+    if (isConfigMissing) {
+      setLoginError("Supabase n'est pas configuré. Veuillez connecter votre projet à Supabase via le bouton vert en haut à droite.");
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const { error } = await signIn(loginForm.email, loginForm.password);
       
@@ -119,6 +128,13 @@ const Login = () => {
     setIsLoading(true);
     setLoginError(null);
 
+    // Vérifier si Supabase est configuré
+    if (isConfigMissing) {
+      setLoginError("Supabase n'est pas configuré. Veuillez connecter votre projet à Supabase via le bouton vert en haut à droite.");
+      setIsLoading(false);
+      return;
+    }
+
     if (registerForm.password !== registerForm.confirmPassword) {
       setIsLoading(false);
       setLoginError("Les mots de passe ne correspondent pas.");
@@ -142,6 +158,7 @@ const Login = () => {
     }
 
     try {
+      console.log("Tentative d'inscription avec:", registerForm.email);
       const { error } = await signUp(
         registerForm.email, 
         registerForm.password, 
@@ -153,6 +170,7 @@ const Login = () => {
       );
       
       if (error) {
+        console.error("Erreur lors de l'inscription:", error);
         setLoginError(error.message || "Erreur lors de l'inscription");
         toast({
           title: "Erreur d'inscription",
@@ -167,6 +185,7 @@ const Login = () => {
         setActiveTab("connexion");
       }
     } catch (error: any) {
+      console.error("Exception lors de l'inscription:", error);
       setLoginError(error.message || "Une erreur s'est produite lors de l'inscription");
       toast({
         title: "Erreur",
@@ -182,6 +201,13 @@ const Login = () => {
     e.preventDefault();
     setIsLoading(true);
     setLoginError(null);
+
+    // Vérifier si Supabase est configuré
+    if (isConfigMissing) {
+      setLoginError("Supabase n'est pas configuré. Veuillez connecter votre projet à Supabase via le bouton vert en haut à droite.");
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const { error } = await signIn(pharmacyForm.email, pharmacyForm.password);
@@ -225,7 +251,23 @@ const Login = () => {
             </p>
           </div>
 
-          {loginError && (
+          {isConfigMissing && (
+            <Alert variant="destructive" className="mb-6 border-red-500 bg-red-50">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Erreur de configuration</AlertTitle>
+              <AlertDescription className="space-y-2">
+                <p>Supabase n'est pas configuré correctement.</p>
+                <p className="font-semibold">Pour résoudre ce problème:</p>
+                <ol className="list-decimal list-inside space-y-1 pl-2">
+                  <li>Cliquez sur le bouton vert Supabase en haut à droite de l'interface</li>
+                  <li>Connectez votre projet à Supabase</li>
+                  <li>Les variables d'environnement seront automatiquement configurées</li>
+                </ol>
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {loginError && !isConfigMissing && (
             <Alert variant="destructive" className="mb-6">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Erreur</AlertTitle>
