@@ -1,138 +1,110 @@
 
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { useToast } from "@/components/ui/use-toast";
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
-// Define types
-interface CartItem {
-  id: number;
+export type CartItem = {
+  id: string;
   name: string;
   price: number;
   quantity: number;
   image?: string;
-}
+  brand: string;
+  pharmacy: string;
+  pharmacy_id: string;
+};
 
-interface CartContextType {
-  cart: CartItem[];
-  cartCount: number;
-  totalPrice: number;
-  addToCart: (product: any) => void;
-  removeFromCart: (productId: number) => void;
-  updateQuantity: (productId: number, quantity: number) => void;
+export type CartContextType = {
+  cartItems: CartItem[];
+  addToCart: (item: CartItem) => void;
+  removeFromCart: (item: CartItem) => void;
+  updateQuantity: (item: CartItem, quantity: number) => void;
   clearCart: () => void;
-  addItem: (product: any) => void; // Ajout de la méthode addItem pour compatibilité
-}
+  getItemsCount: () => number;
+  getTotalPrice: () => number;
+};
 
-// Create context
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-// Create provider
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [cart, setCart] = useState<CartItem[]>([]);
-  const { toast } = useToast();
-
-  // Load cart from localStorage on mount
-  useEffect(() => {
-    const savedCart = localStorage.getItem("cart");
-    if (savedCart) {
-      try {
-        setCart(JSON.parse(savedCart));
-      } catch (error) {
-        console.error("Failed to parse cart from localStorage:", error);
-        // Clear corrupted cart data
-        localStorage.removeItem("cart");
-      }
+  const [cartItems, setCartItems] = useState<CartItem[]>(() => {
+    // Load from localStorage on initial render
+    if (typeof window !== 'undefined') {
+      const savedCart = localStorage.getItem('cart');
+      return savedCart ? JSON.parse(savedCart) : [];
     }
-  }, []);
+    return [];
+  });
 
-  // Save cart to localStorage when it changes
+  // Save to localStorage whenever cart changes
   useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
-  }, [cart]);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('cart', JSON.stringify(cartItems));
+    }
+  }, [cartItems]);
 
-  // Calculate total count and price
-  const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
-  const totalPrice = cart.reduce((total, item) => total + item.price * item.quantity, 0);
-
-  // Add product to cart
-  const addToCart = (product: any) => {
-    setCart((prevCart) => {
-      const existingItemIndex = prevCart.findIndex((item) => item.id === product.id);
-
+  const addToCart = (item: CartItem) => {
+    setCartItems(prevItems => {
+      const existingItemIndex = prevItems.findIndex(i => i.id === item.id);
+      
       if (existingItemIndex >= 0) {
-        // Product exists in cart, update quantity
-        const updatedCart = [...prevCart];
-        updatedCart[existingItemIndex].quantity += 1;
-        return updatedCart;
+        // Update quantity if item already exists
+        const updatedItems = [...prevItems];
+        updatedItems[existingItemIndex] = {
+          ...updatedItems[existingItemIndex],
+          quantity: updatedItems[existingItemIndex].quantity + item.quantity
+        };
+        return updatedItems;
       } else {
-        // Product not in cart, add it
-        return [...prevCart, { ...product, quantity: 1 }];
+        // Add new item
+        return [...prevItems, item];
       }
     });
   };
 
-  // Add addItem as an alias for addToCart for compatibility
-  const addItem = addToCart;
-
-  // Remove product from cart
-  const removeFromCart = (productId: number) => {
-    setCart((prevCart) => {
-      const newCart = prevCart.filter((item) => item.id !== productId);
-      if (newCart.length < prevCart.length) {
-        toast({
-          title: "Produit retiré",
-          description: "Le produit a été retiré de votre panier",
-        });
-      }
-      return newCart;
-    });
+  const removeFromCart = (item: CartItem) => {
+    setCartItems(prevItems => prevItems.filter(i => i.id !== item.id));
   };
 
-  // Update quantity of product in cart
-  const updateQuantity = (productId: number, quantity: number) => {
-    if (quantity < 1) {
-      removeFromCart(productId);
-      return;
-    }
-
-    setCart((prevCart) =>
-      prevCart.map((item) =>
-        item.id === productId ? { ...item, quantity } : item
+  const updateQuantity = (item: CartItem, quantity: number) => {
+    setCartItems(prevItems => 
+      prevItems.map(i => 
+        i.id === item.id ? { ...i, quantity } : i
       )
     );
   };
 
-  // Clear cart
   const clearCart = () => {
-    setCart([]);
-    toast({
-      title: "Panier vidé",
-      description: "Tous les produits ont été retirés de votre panier",
-    });
+    setCartItems([]);
+  };
+
+  const getItemsCount = () => {
+    return cartItems.reduce((total, item) => total + item.quantity, 0);
+  };
+
+  const getTotalPrice = () => {
+    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
 
   return (
-    <CartContext.Provider
-      value={{
-        cart,
-        cartCount,
-        totalPrice,
-        addToCart,
-        removeFromCart,
-        updateQuantity,
-        clearCart,
-        addItem, // Ajout de la méthode addItem au contexte
-      }}
-    >
+    <CartContext.Provider value={{ 
+      cartItems, 
+      addToCart, 
+      removeFromCart, 
+      updateQuantity, 
+      clearCart,
+      getItemsCount,
+      getTotalPrice
+    }}>
       {children}
     </CartContext.Provider>
   );
 };
 
-// Custom hook to use the cart context
 export const useCart = () => {
   const context = useContext(CartContext);
+  
   if (context === undefined) {
-    throw new Error("useCart must be used within a CartProvider");
+    throw new Error('useCart must be used within a CartProvider');
   }
+  
   return context;
 };
