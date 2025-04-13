@@ -17,6 +17,7 @@ interface Medicine {
   category: string;
   image: string;
   pharmacy: string;
+  pharmacy_id?: string; // Ajout de pharmacy_id optionnel
 }
 
 const PopularMedicines = () => {
@@ -49,7 +50,18 @@ const PopularMedicines = () => {
   }, []);
 
   const handleAddToCart = (medicine: Medicine) => {
-    addToCart(medicine);
+    // Convertir l'objet Medicine en CartItem en ajoutant les propriétés manquantes
+    addToCart({
+      id: String(medicine.id), // Convertir en string pour correspondre au type CartItem
+      name: medicine.name,
+      price: medicine.price,
+      quantity: 1, // Ajouter un article par défaut
+      image: medicine.image,
+      brand: medicine.brand,
+      pharmacy: medicine.pharmacy,
+      pharmacy_id: medicine.pharmacy_id || "unknown" // Utiliser pharmacy_id s'il existe, sinon "unknown"
+    });
+    
     toast({
       title: "Produit ajouté au panier",
       description: `${medicine.name} a été ajouté à votre panier`,

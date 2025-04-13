@@ -16,6 +16,7 @@ interface Medicine {
   category: string;
   image: string;
   pharmacy: string;
+  pharmacy_id?: string; // Ajout de pharmacy_id optionnel
 }
 
 interface MedicineCardProps {

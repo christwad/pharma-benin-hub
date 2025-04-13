@@ -140,11 +140,14 @@ const SearchPage = () => {
     }
     
     addToCart({
-      id: medicine.id,
+      id: String(medicine.id), // Convertir l'ID en string
       name: medicine.name,
       price: medicine.price,
       quantity: 1,
-      image: medicine.image
+      image: medicine.image,
+      brand: medicine.name, // Utiliser name comme brand par défaut
+      pharmacy: medicine.pharmacy,
+      pharmacy_id: String(medicine.id).split('-')[0] // Utiliser un ID générique pour la pharmacie
     });
     
     toast({
