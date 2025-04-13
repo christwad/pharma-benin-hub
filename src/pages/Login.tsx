@@ -1,5 +1,4 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -17,6 +16,7 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { User, Landmark, Lock, Mail, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Login = () => {
   const { toast } = useToast();
@@ -24,15 +24,20 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("connexion");
+  const { signIn, signUp, user } = useAuth();
 
-  // Login form state
+  useEffect(() => {
+    if (user) {
+      navigate('/client-dashboard');
+    }
+  }, [user, navigate]);
+
   const [loginForm, setLoginForm] = useState({
     email: "",
     password: "",
     rememberMe: false,
   });
 
-  // Registration form state
   const [registerForm, setRegisterForm] = useState({
     name: "",
     email: "",
@@ -42,7 +47,6 @@ const Login = () => {
     acceptTerms: false,
   });
 
-  // Pharmacy form state
   const [pharmacyForm, setPharmacyForm] = useState({
     email: "",
     password: "",
@@ -76,45 +80,45 @@ const Login = () => {
     setLoginError(null);
   };
 
-  const handleLoginSubmit = (e: React.FormEvent) => {
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setLoginError(null);
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const { error } = await signIn(loginForm.email, loginForm.password);
       
-      // Demo login - in a real app, this would validate credentials with a backend
-      if (loginForm.email && loginForm.password) {
-        // Set user type in localStorage to limit access
-        localStorage.setItem("userType", "client");
-        localStorage.setItem("userEmail", loginForm.email);
-        
+      if (error) {
+        setLoginError(error.message || "Email ou mot de passe incorrect");
+        toast({
+          title: "Échec de la connexion",
+          description: error.message || "Email ou mot de passe incorrect",
+          variant: "destructive",
+        });
+      } else {
         toast({
           title: "Connexion réussie!",
           description: "Bienvenue sur votre espace client.",
         });
-        
-        // Redirect to client dashboard
         navigate("/client-dashboard");
-      } else {
-        setLoginError("Veuillez remplir tous les champs.");
-        toast({
-          title: "Échec de la connexion",
-          description: "Veuillez remplir tous les champs.",
-          variant: "destructive",
-        });
       }
-    }, 1500);
+    } catch (error: any) {
+      setLoginError(error.message || "Une erreur s'est produite lors de la connexion");
+      toast({
+        title: "Erreur",
+        description: error.message || "Une erreur s'est produite lors de la connexion",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleRegisterSubmit = (e: React.FormEvent) => {
+  const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setLoginError(null);
 
-    // Validate form
     if (registerForm.password !== registerForm.confirmPassword) {
       setIsLoading(false);
       setLoginError("Les mots de passe ne correspondent pas.");
@@ -137,56 +141,78 @@ const Login = () => {
       return;
     }
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const { error } = await signUp(
+        registerForm.email, 
+        registerForm.password, 
+        {
+          full_name: registerForm.name,
+          phone_number: registerForm.phone,
+          role: 'client'
+        }
+      );
       
-      // Demo registration - in a real app, this would register the user with a backend
-      localStorage.setItem("userType", "client");
-      localStorage.setItem("userEmail", registerForm.email);
-      
+      if (error) {
+        setLoginError(error.message || "Erreur lors de l'inscription");
+        toast({
+          title: "Erreur d'inscription",
+          description: error.message || "Erreur lors de l'inscription",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Inscription réussie!",
+          description: "Veuillez vérifier votre email pour confirmer votre compte.",
+        });
+        setActiveTab("connexion");
+      }
+    } catch (error: any) {
+      setLoginError(error.message || "Une erreur s'est produite lors de l'inscription");
       toast({
-        title: "Inscription réussie!",
-        description: "Votre compte est en attente d'approbation par un administrateur.",
+        title: "Erreur",
+        description: error.message || "Une erreur s'est produite lors de l'inscription",
+        variant: "destructive",
       });
-      
-      // Redirect to client dashboard
-      navigate("/client-dashboard");
-    }, 1500);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handlePharmacySubmit = (e: React.FormEvent) => {
+  const handlePharmacySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setLoginError(null);
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const { error } = await signIn(pharmacyForm.email, pharmacyForm.password);
       
-      // Demo login - in a real app, this would validate credentials with a backend
-      if (pharmacyForm.email === "pharmacy@example.com" && pharmacyForm.password === "password") {
-        // Set user type in localStorage to limit access
-        localStorage.setItem("userType", "pharmacy");
-        localStorage.setItem("userEmail", pharmacyForm.email);
-        
+      if (error) {
+        setLoginError(error.message || "Email ou mot de passe incorrect");
+        toast({
+          title: "Échec de la connexion",
+          description: error.message || "Email ou mot de passe incorrect",
+          variant: "destructive",
+        });
+      } else {
         toast({
           title: "Connexion réussie!",
           description: "Bienvenue sur votre espace pharmacie.",
         });
-        
-        // Redirect to pharmacy dashboard
         navigate("/pharmacy-dashboard");
-      } else {
-        setLoginError("Email ou mot de passe incorrect.");
-        toast({
-          title: "Échec de la connexion",
-          description: "Email ou mot de passe incorrect.",
-          variant: "destructive",
-        });
       }
-    }, 1500);
+    } catch (error: any) {
+      setLoginError(error.message || "Une erreur s'est produite lors de la connexion");
+      toast({
+        title: "Erreur",
+        description: error.message || "Une erreur s'est produite lors de la connexion",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  if (user) return null;
 
   return (
     <Layout>
