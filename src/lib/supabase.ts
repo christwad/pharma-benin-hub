@@ -7,15 +7,17 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 // Vérification des variables d'environnement requises
-if (!supabaseUrl || !supabaseAnonKey || 
-    supabaseUrl === "https://your-real-supabase-url.supabase.co" || 
-    supabaseAnonKey === "your-real-supabase-anon-key") {
+const isConfigMissing = !supabaseUrl || !supabaseAnonKey || 
+  supabaseUrl === "https://your-real-supabase-url.supabase.co" || 
+  supabaseAnonKey === "your-real-supabase-anon-key";
+
+if (isConfigMissing) {
   console.error(`
     ===== ERREUR DE CONFIGURATION SUPABASE =====
     Les variables d'environnement Supabase ne sont pas correctement configurées.
     
     Pour résoudre ce problème :
-    1. Cliquez sur le bouton vert Supabase en haut à droite de l'interface.
+    1. Cliquez sur le bouton vert Supabase en haut à droite de l'interface Lovable.
     2. Connectez votre projet à Supabase.
     3. Les variables d'environnement seront automatiquement configurées.
     
@@ -25,8 +27,7 @@ if (!supabaseUrl || !supabaseAnonKey ||
   `);
 }
 
-// Création d'un client Supabase factice si les variables sont manquantes
-// Ceci permet à l'application de se charger mais avec une fonctionnalité limitée
+// Création d'un client Supabase
 let supabase;
 
 try {
@@ -35,8 +36,15 @@ try {
     supabaseUrl || 'https://placeholder-url.supabase.co',
     supabaseAnonKey || 'placeholder-key'
   );
+  
+  // Test de connexion pour vérifier si Supabase est correctement configuré
+  supabase.auth.onAuthStateChange((event, session) => {
+    console.log('Auth event:', event);
+  });
+  
 } catch (error) {
   console.error('Failed to initialize Supabase client:', error);
+  
   // Crée un client factice avec des méthodes pour éviter les erreurs
   supabase = {
     auth: {
@@ -74,4 +82,4 @@ try {
   } as unknown as ReturnType<typeof createClient<Database>>;
 }
 
-export { supabase };
+export { supabase, isConfigMissing };
