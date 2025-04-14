@@ -78,9 +78,11 @@ const PharmacySignupPage = () => {
         throw error;
       }
 
-      // Stocker l'identifiant de vérification (pourrait être utile pour certaines implémentations)
+      // Modifier cette partie pour ne pas essayer d'accéder à data.id qui n'existe pas
+      // Le message ID ou autre identifiant pourrait être stocké si nécessaire
       if (data) {
-        setVerificationId(data?.id || "");
+        // Stocker une chaîne vide ou une autre valeur si nécessaire
+        setVerificationId("pending_verification");
       }
 
       toast({
