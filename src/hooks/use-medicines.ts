@@ -32,7 +32,7 @@ export const useMedicines = (pharmacyId?: string, category?: string) => {
         }
 
         const { data } = await api.get(url);
-        setMedicines(data || []);
+        setMedicines(data as Tables<'medicines'>[] || []);
       } catch (err: any) {
         console.error('Erreur lors du chargement des médicaments:', err);
         setError(err.message);
@@ -67,7 +67,7 @@ export const useMedicineDetails = (medicineId: string) => {
         if (!medicineId) return;
         
         const { data } = await api.get(`/medicines/${medicineId}`);
-        setMedicine(data);
+        setMedicine(data as Tables<'medicines'>);
       } catch (err: any) {
         console.error('Erreur lors du chargement des détails du médicament:', err);
         setError(err.message);

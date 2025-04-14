@@ -16,7 +16,7 @@ interface UserProfile {
 
 interface AuthContextType {
   user: User | null;
-  profile: UserProfile | null; // Ajout de la propriété profile
+  profile: UserProfile | null; // Propriété profile correctement définie dans l'interface
   loading: boolean;
   error: string | null;
   signIn: (email: string, password: string) => Promise<{ error?: Error }>;

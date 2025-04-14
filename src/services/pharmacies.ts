@@ -67,7 +67,7 @@ export const usePharmacies = (city?: string, isVerifiedOnly: boolean = true) => 
         );
         
         if (data) {
-          // Utiliser une conversion de type pour résoudre l'erreur de typage
+          // Utiliser une assertion de type pour résoudre l'erreur de typage
           setPharmacies(data as Tables<'pharmacies'>[]);
         }
       } catch (err: any) {
@@ -109,7 +109,7 @@ export const usePharmacyDetails = (pharmacyId: string) => {
           );
           
           if (data) {
-            // Utiliser une conversion de type pour résoudre l'erreur de typage
+            // Utiliser une assertion de type pour résoudre l'erreur de typage
             setPharmacy(data as Tables<'pharmacies'>);
           }
         }

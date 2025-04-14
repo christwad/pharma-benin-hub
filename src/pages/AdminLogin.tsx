@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
@@ -24,7 +23,7 @@ const AdminLogin = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
-  const { signIn, user, profile } = useAuth();
+  const { signIn, user } = useAuth();
 
   // Admin form state
   const [adminForm, setAdminForm] = useState({
@@ -35,10 +34,10 @@ const AdminLogin = () => {
 
   // Rediriger si l'utilisateur est déjà connecté en tant qu'admin
   useEffect(() => {
-    if (user && profile?.role === 'admin') {
+    if (user && user.role === 'admin') {
       navigate('/admin');
     }
-  }, [user, profile, navigate]);
+  }, [user, navigate]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>

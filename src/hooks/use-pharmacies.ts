@@ -32,7 +32,7 @@ export const usePharmacies = (city?: string, isVerifiedOnly: boolean = true) => 
         }
 
         const { data } = await api.get(url);
-        setPharmacies(data || []);
+        setPharmacies(data as Tables<'pharmacies'>[] || []);
       } catch (err: any) {
         console.error('Erreur lors du chargement des pharmacies:', err);
         setError(err.message);
@@ -67,7 +67,7 @@ export const usePharmacyDetails = (pharmacyId: string) => {
         if (!pharmacyId) return;
         
         const { data } = await api.get(`/pharmacies/${pharmacyId}`);
-        setPharmacy(data);
+        setPharmacy(data as Tables<'pharmacies'>);
       } catch (err: any) {
         console.error('Erreur lors du chargement des détails de la pharmacie:', err);
         setError(err.message);
