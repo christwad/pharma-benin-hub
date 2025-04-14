@@ -145,26 +145,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: {
+            full_name: userDetails.full_name,
+            phone_number: userDetails.phone_number,
+            role: userDetails.role
+          }
+        }
       });
 
       if (error) {
         return { error };
       }
 
-      // 2. Créer le profil utilisateur
+      // 2. Créer le profil utilisateur (même si déjà créé par le trigger)
       if (data.user) {
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert({
-            id: data.user.id,
-            full_name: userDetails.full_name,
-            phone_number: userDetails.phone_number,
-            role: userDetails.role,
-          });
+        try {
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .upsert({
+              id: data.user.id,
+              full_name: userDetails.full_name,
+              phone_number: userDetails.phone_number,
+              role: userDetails.role,
+            });
 
-        if (profileError) {
-          console.error('Erreur lors de la création du profil:', profileError);
-          return { error: profileError };
+          if (profileError) {
+            console.error('Erreur lors de la création du profil:', profileError);
+            // Nous continuons même s'il y a une erreur car le profil 
+            // peut être déjà créé par le trigger côté serveur
+          }
+        } catch (profileError) {
+          console.error('Exception lors de la création du profil:', profileError);
+          // Continuons même en cas d'erreur
         }
       }
 

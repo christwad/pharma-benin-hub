@@ -157,6 +157,15 @@ const Login = () => {
 
     try {
       console.log("Tentative d'inscription avec:", registerForm.email);
+      
+      console.log("Données d'inscription:", {
+        email: registerForm.email,
+        password: "***",
+        full_name: registerForm.name,
+        phone_number: registerForm.phone,
+        role: 'client'
+      });
+      
       const { error } = await signUp(
         registerForm.email, 
         registerForm.password, 
