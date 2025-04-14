@@ -1,27 +1,31 @@
 
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import { supabase, isConfigMissing, configErrorMessage } from '@/lib/supabase';
-import { Session, User } from '@supabase/supabase-js';
 import { Tables } from '@/types/supabase';
 import { useToast } from '@/components/ui/use-toast';
+import authService, { AuthResponse } from '@/services/auth';
+
+type User = {
+  id: string;
+  email: string;
+  role?: string;
+};
 
 type AuthContextType = {
   user: User | null;
-  session: Session | null;
+  token: string | null;
   profile: Tables<'profiles'> | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: any | null }>;
   signUp: (email: string, password: string, userDetails: { full_name: string; phone_number: string; role: 'client' | 'pharmacist' | 'admin' }) => Promise<{ error: any | null }>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
-  isSupabaseConfigured: boolean;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [profile, setProfile] = useState<Tables<'profiles'> | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -31,45 +35,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const getInitialSession = async () => {
       setLoading(true);
 
-      // Vérifier si la configuration Supabase est manquante
-      if (isConfigMissing) {
-        console.warn("Supabase n'est pas configuré. L'authentification ne fonctionnera pas correctement.");
-        setLoading(false);
-        return;
-      }
-
-      const { data: { session } } = await supabase.auth.getSession();
-
-      setSession(session);
-      setUser(session?.user ?? null);
+      // Vérifier si un token existe
+      const storedToken = localStorage.getItem("authToken");
       
-      if (session?.user) {
-        await refreshProfile();
+      if (storedToken) {
+        setToken(storedToken);
+        try {
+          // Récupérer les infos utilisateur avec le token
+          const userData = await authService.getProfile();
+          setUser(userData.user);
+          setProfile(userData.profile || null);
+        } catch (error) {
+          console.error("Erreur de récupération du profil:", error);
+          localStorage.removeItem("authToken");
+          setToken(null);
+          setUser(null);
+          setProfile(null);
+        }
       }
 
       setLoading(false);
     };
 
     getInitialSession();
-
-    // Configurer l'écouteur d'événements pour les changements d'authentification
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        console.log('Auth event:', event);
-        setSession(session);
-        setUser(session?.user ?? null);
-
-        if (event === 'SIGNED_IN' && session?.user) {
-          await refreshProfile();
-        } else if (event === 'SIGNED_OUT') {
-          setProfile(null);
-        }
-      }
-    );
-
-    return () => {
-      subscription.unsubscribe();
-    };
   }, []);
 
   // Récupérer le profil de l'utilisateur
@@ -77,17 +65,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!user) return;
 
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-
-      if (error) {
-        throw error;
-      }
-
-      setProfile(data);
+      const userData = await authService.getProfile();
+      setProfile(userData.profile || null);
     } catch (error: any) {
       console.error('Erreur lors de la récupération du profil:', error);
       toast({
@@ -101,24 +80,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Connexion
   const signIn = async (email: string, password: string) => {
     try {
-      // Vérifier si Supabase est configuré
-      if (isConfigMissing) {
-        return { 
-          error: { 
-            message: 'Configuration Supabase manquante. Veuillez connecter votre projet à Supabase via le bouton vert en haut à droite.' 
-          } 
-        };
-      }
-
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) {
-        return { error };
-      }
-
+      const response = await authService.login({ email, password });
+      
+      setUser(response.user);
+      setToken(response.token);
+      setProfile(response.profile || null);
+      
       return { error: null };
     } catch (error) {
       return { error };
@@ -132,55 +99,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     userDetails: { full_name: string; phone_number: string; role: 'client' | 'pharmacist' | 'admin' }
   ) => {
     try {
-      // Vérifier si Supabase est configuré
-      if (isConfigMissing) {
-        return { 
-          error: { 
-            message: 'Configuration Supabase manquante. Veuillez connecter votre projet à Supabase via le bouton vert en haut à droite.' 
-          } 
-        };
-      }
-
-      // 1. Créer l'utilisateur dans Auth
-      const { data, error } = await supabase.auth.signUp({
+      const response = await authService.register({
         email,
         password,
-        options: {
-          data: {
-            full_name: userDetails.full_name,
-            phone_number: userDetails.phone_number,
-            role: userDetails.role
-          }
-        }
+        full_name: userDetails.full_name,
+        phone_number: userDetails.phone_number,
+        role: userDetails.role
       });
-
-      if (error) {
-        return { error };
+      
+      // Si l'inscription avec auto-login
+      if (response.token) {
+        setUser(response.user);
+        setToken(response.token);
+        setProfile(response.profile || null);
       }
-
-      // 2. Créer le profil utilisateur (même si déjà créé par le trigger)
-      if (data.user) {
-        try {
-          const { error: profileError } = await supabase
-            .from('profiles')
-            .upsert({
-              id: data.user.id,
-              full_name: userDetails.full_name,
-              phone_number: userDetails.phone_number,
-              role: userDetails.role,
-            });
-
-          if (profileError) {
-            console.error('Erreur lors de la création du profil:', profileError);
-            // Nous continuons même s'il y a une erreur car le profil 
-            // peut être déjà créé par le trigger côté serveur
-          }
-        } catch (profileError) {
-          console.error('Exception lors de la création du profil:', profileError);
-          // Continuons même en cas d'erreur
-        }
-      }
-
+      
       return { error: null };
     } catch (error) {
       console.error('Erreur inattendue lors de l\'inscription:', error);
@@ -190,19 +123,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Déconnexion
   const signOut = async () => {
-    await supabase.auth.signOut();
+    await authService.logout();
+    setUser(null);
+    setToken(null);
+    setProfile(null);
   };
 
   const value = {
     user,
-    session,
+    token,
     profile,
     loading,
     signIn,
     signUp,
     signOut,
     refreshProfile,
-    isSupabaseConfigured: !isConfigMissing,
   };
 
   return (

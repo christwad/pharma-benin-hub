@@ -6,12 +6,14 @@ import {
   Search, 
   ShoppingCart, 
   Menu, 
-  Shield
+  Shield,
+  User
 } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Badge } from "@/components/ui/badge";
 import { useCart } from "@/hooks/use-cart";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Navbar = () => {
   const isMobile = useIsMobile();
@@ -19,6 +21,7 @@ const Navbar = () => {
   const { cartCount } = useCart();
   const location = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
+  const { user } = useAuth();
   
   // Detect scroll to add shadow
   useEffect(() => {
@@ -43,6 +46,21 @@ const Navbar = () => {
     { name: "À propos", path: "/about" },
     { name: "Contact", path: "/contact" },
   ];
+
+  // Rediriger vers le bon dashboard en fonction du rôle
+  const getDashboardLink = () => {
+    if (!user) return "/login";
+    
+    switch (user.role) {
+      case 'admin':
+        return '/admin';
+      case 'pharmacist':
+        return '/pharmacy-dashboard';
+      case 'client':
+      default:
+        return '/client-dashboard';
+    }
+  };
 
   // Check if the path is active
   const isActivePath = (path: string) => {
@@ -99,11 +117,22 @@ const Navbar = () => {
               </Badge>
             )}
           </Link>
-          <Link to="/login">
-            <Button variant="outline" size="sm" className="hidden md:flex gap-2 border-benin-green text-benin-green hover:bg-benin-green hover:text-white">
-              <span>Espace Client</span>
-            </Button>
-          </Link>
+          
+          {user ? (
+            <Link to={getDashboardLink()}>
+              <Button variant="outline" size="sm" className="hidden md:flex gap-2 border-benin-green text-benin-green hover:bg-benin-green hover:text-white">
+                <User className="h-4 w-4" />
+                <span>Mon espace</span>
+              </Button>
+            </Link>
+          ) : (
+            <Link to="/login">
+              <Button variant="outline" size="sm" className="hidden md:flex gap-2 border-benin-green text-benin-green hover:bg-benin-green hover:text-white">
+                <span>Espace Client</span>
+              </Button>
+            </Link>
+          )}
+          
           <Link to="/admin-login">
             <Button variant="outline" size="sm" className="hidden md:flex gap-2 border-gray-300 text-gray-700 hover:bg-gray-100">
               <Shield className="h-4 w-4" />
@@ -136,15 +165,28 @@ const Navbar = () => {
                     </Link>
                   ))}
                   <div className="mt-4 flex flex-col gap-2">
-                    <Link 
-                      to="/login" 
-                      onClick={() => setIsMenuOpen(false)}
-                      className="w-full"
-                    >
-                      <Button variant="outline" className="w-full justify-start gap-2 border-benin-green text-benin-green hover:bg-benin-green hover:text-white">
-                        <span>Espace Client</span>
-                      </Button>
-                    </Link>
+                    {user ? (
+                      <Link 
+                        to={getDashboardLink()} 
+                        onClick={() => setIsMenuOpen(false)}
+                        className="w-full"
+                      >
+                        <Button variant="outline" className="w-full justify-start gap-2 border-benin-green text-benin-green hover:bg-benin-green hover:text-white">
+                          <User className="h-4 w-4" />
+                          <span>Mon espace</span>
+                        </Button>
+                      </Link>
+                    ) : (
+                      <Link 
+                        to="/login" 
+                        onClick={() => setIsMenuOpen(false)}
+                        className="w-full"
+                      >
+                        <Button variant="outline" className="w-full justify-start gap-2 border-benin-green text-benin-green hover:bg-benin-green hover:text-white">
+                          <span>Espace Client</span>
+                        </Button>
+                      </Link>
+                    )}
                     <Link 
                       to="/admin-login" 
                       onClick={() => setIsMenuOpen(false)}
