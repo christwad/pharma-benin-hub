@@ -67,7 +67,8 @@ export const usePharmacies = (city?: string, isVerifiedOnly: boolean = true) => 
         );
         
         if (data) {
-          setPharmacies(data);
+          // Utiliser une conversion de type pour résoudre l'erreur de typage
+          setPharmacies(data as Tables<'pharmacies'>[]);
         }
       } catch (err: any) {
         console.error('Erreur lors du chargement des pharmacies:', err);
@@ -108,7 +109,8 @@ export const usePharmacyDetails = (pharmacyId: string) => {
           );
           
           if (data) {
-            setPharmacy(data);
+            // Utiliser une conversion de type pour résoudre l'erreur de typage
+            setPharmacy(data as Tables<'pharmacies'>);
           }
         }
       } catch (err: any) {

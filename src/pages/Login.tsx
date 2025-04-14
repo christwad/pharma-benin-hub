@@ -14,11 +14,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
-import { User, Landmark, Lock, Mail, AlertCircle, ExternalLink } from "lucide-react";
+import { User, Landmark, Lock, Mail, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useAuth } from "@/contexts/AuthContext";
-import { isConfigMissing } from "@/lib/supabase";
-import { supabase } from "@/lib/supabase";
+import { isConfigMissing } from "@/lib/config";
 
 const Login = () => {
   const { toast } = useToast();
@@ -32,15 +31,6 @@ const Login = () => {
     if (user) {
       navigate('/client-dashboard');
     }
-
-    const checkSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (data.session) {
-        navigate('/client-dashboard');
-      }
-    };
-    
-    checkSession();
   }, [user, navigate]);
 
   const [loginForm, setLoginForm] = useState({
@@ -262,12 +252,12 @@ const Login = () => {
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Erreur de configuration</AlertTitle>
               <AlertDescription className="space-y-2">
-                <p>Supabase n'est pas configuré correctement.</p>
+                <p>La configuration API n'est pas définie correctement.</p>
                 <p className="font-semibold">Pour résoudre ce problème:</p>
                 <ol className="list-decimal list-inside space-y-1 pl-2">
-                  <li>Cliquez sur le bouton vert Supabase en haut à droite de l'interface</li>
-                  <li>Connectez votre projet à Supabase</li>
-                  <li>Les variables d'environnement seront automatiquement configurées</li>
+                  <li>Vérifiez que votre API Laravel est en cours d'exécution</li>
+                  <li>Vérifiez que l'URL de l'API est correctement configurée</li>
+                  <li>Assurez-vous que les endpoints API nécessaires sont disponibles</li>
                 </ol>
               </AlertDescription>
             </Alert>

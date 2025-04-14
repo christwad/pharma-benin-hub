@@ -6,15 +6,17 @@ interface User {
   id: string;
   email: string;
   role: string;
-  profile?: {
-    full_name: string;
-    phone_number: string;
-    [key: string]: any;
-  };
+}
+
+interface UserProfile {
+  full_name: string;
+  phone_number: string;
+  [key: string]: any;
 }
 
 interface AuthContextType {
   user: User | null;
+  profile: UserProfile | null; // Ajout de la propriété profile
   loading: boolean;
   error: string | null;
   signIn: (email: string, password: string) => Promise<{ error?: Error }>;
@@ -26,6 +28,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,6 +39,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         if (authService.isAuthenticated()) {
           const userData = await authService.getProfile();
           setUser(userData.user);
+          setProfile(userData.profile || null);
         }
       } catch (err: any) {
         console.error("Erreur lors de la récupération du profil:", err);
@@ -55,6 +59,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       const response = await authService.login({ email, password });
       setUser(response.user);
+      setProfile(response.profile || null);
       return {};
     } catch (err: any) {
       console.error("Erreur de connexion:", err);
@@ -79,6 +84,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       // Si auto-connexion après inscription
       if (response.user) {
         setUser(response.user);
+        setProfile(response.profile || null);
       }
       return {};
     } catch (err: any) {
@@ -94,6 +100,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       await authService.logout();
       setUser(null);
+      setProfile(null);
     } catch (err: any) {
       console.error("Erreur de déconnexion:", err);
     }
@@ -101,6 +108,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const value = {
     user,
+    profile,
     loading,
     error,
     signIn,

@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import Index from '@/pages/Index';
@@ -52,14 +51,14 @@ const RequireAuth = ({ children }: { children: React.ReactNode }) => {
 
 // Composant pour rediriger si l'utilisateur n'est pas une pharmacie
 const ProtectedPharmacyRoute = ({ children }: { children: React.ReactNode }) => {
-  const { profile, loading } = useAuth();
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
   
   useEffect(() => {
-    if (!loading && (!profile || profile.role !== 'pharmacist')) {
+    if (!loading && (!user || user.role !== 'pharmacist')) {
       navigate('/login', { replace: true });
     }
-  }, [profile, loading, navigate]);
+  }, [user, loading, navigate]);
   
   if (loading) {
     return <div className="flex justify-center items-center min-h-screen">
@@ -67,19 +66,19 @@ const ProtectedPharmacyRoute = ({ children }: { children: React.ReactNode }) => 
     </div>;
   }
   
-  return profile?.role === 'pharmacist' ? <>{children}</> : null;
+  return user?.role === 'pharmacist' ? <>{children}</> : null;
 };
 
 // Composant pour protéger les routes d'administration
 const ProtectedAdminRoute = ({ children }: { children: React.ReactNode }) => {
-  const { profile, loading } = useAuth();
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
   
   useEffect(() => {
-    if (!loading && (!profile || profile.role !== 'admin')) {
+    if (!loading && (!user || user.role !== 'admin')) {
       navigate('/admin-login', { replace: true });
     }
-  }, [profile, loading, navigate]);
+  }, [user, loading, navigate]);
   
   if (loading) {
     return <div className="flex justify-center items-center min-h-screen">
@@ -87,19 +86,19 @@ const ProtectedAdminRoute = ({ children }: { children: React.ReactNode }) => {
     </div>;
   }
   
-  return profile?.role === 'admin' ? <>{children}</> : null;
+  return user?.role === 'admin' ? <>{children}</> : null;
 };
 
 // Composant pour protéger les routes client
 const ProtectedClientRoute = ({ children }: { children: React.ReactNode }) => {
-  const { profile, loading } = useAuth();
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
   
   useEffect(() => {
-    if (!loading && (!profile || profile.role !== 'client')) {
+    if (!loading && (!user || user.role !== 'client')) {
       navigate('/login', { replace: true });
     }
-  }, [profile, loading, navigate]);
+  }, [user, loading, navigate]);
   
   if (loading) {
     return <div className="flex justify-center items-center min-h-screen">
@@ -107,7 +106,7 @@ const ProtectedClientRoute = ({ children }: { children: React.ReactNode }) => {
     </div>;
   }
   
-  return profile?.role === 'client' ? <>{children}</> : null;
+  return user?.role === 'client' ? <>{children}</> : null;
 };
 
 const AppRoutes = () => {
