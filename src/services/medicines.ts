@@ -1,7 +1,8 @@
 
 import api from "./api";
-import { useApi } from "./api";
 import { Tables } from "@/types/supabase";
+import { useState, useEffect } from "react";
+import { useToast } from "@/components/ui/use-toast";
 
 // Service pour les médicaments
 export const medicinesService = {
@@ -52,7 +53,6 @@ export const useMedicines = (pharmacyId?: string, category?: string) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
-  const { handleRequest } = useApi();
 
   useEffect(() => {
     const fetchMedicines = async () => {
@@ -60,12 +60,9 @@ export const useMedicines = (pharmacyId?: string, category?: string) => {
       setError(null);
 
       try {
-        const data = await handleRequest(() => 
-          medicinesService.getAllMedicines(pharmacyId, category)
-        );
-        
+        const data = await medicinesService.getAllMedicines(pharmacyId, category);
         if (data) {
-          setMedicines(data);
+          setMedicines(data as Tables<'medicines'>[]);
         }
       } catch (err: any) {
         console.error('Erreur lors du chargement des médicaments:', err);
@@ -81,7 +78,7 @@ export const useMedicines = (pharmacyId?: string, category?: string) => {
     };
 
     fetchMedicines();
-  }, [pharmacyId, category, toast, handleRequest]);
+  }, [pharmacyId, category, toast]);
 
   return { medicines, loading, error };
 };
@@ -92,7 +89,6 @@ export const useMedicineDetails = (medicineId: string) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
-  const { handleRequest } = useApi();
 
   useEffect(() => {
     const fetchMedicineDetails = async () => {
@@ -101,12 +97,9 @@ export const useMedicineDetails = (medicineId: string) => {
 
       try {
         if (medicineId) {
-          const data = await handleRequest(() => 
-            medicinesService.getMedicineById(medicineId)
-          );
-          
+          const data = await medicinesService.getMedicineById(medicineId);
           if (data) {
-            setMedicine(data);
+            setMedicine(data as Tables<'medicines'>);
           }
         }
       } catch (err: any) {
@@ -125,10 +118,7 @@ export const useMedicineDetails = (medicineId: string) => {
     if (medicineId) {
       fetchMedicineDetails();
     }
-  }, [medicineId, toast, handleRequest]);
+  }, [medicineId, toast]);
 
   return { medicine, loading, error };
 };
-
-// N'oubliez pas d'importer useState et useEffect
-import { useState, useEffect } from "react";

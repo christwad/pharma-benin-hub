@@ -1,8 +1,8 @@
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
 import { Tables } from '@/types/supabase';
 import { useToast } from '@/components/ui/use-toast';
+import api from '@/services/api';
 
 export const usePharmacies = (city?: string, isVerifiedOnly: boolean = true) => {
   const [pharmacies, setPharmacies] = useState<Tables<'pharmacies'>[]>([]);
@@ -16,27 +16,22 @@ export const usePharmacies = (city?: string, isVerifiedOnly: boolean = true) => 
       setError(null);
 
       try {
-        let query = supabase
-          .from('pharmacies')
-          .select('*')
-          .eq('is_active', true);
+        let url = "/pharmacies";
+        const params = new URLSearchParams();
         
-        // Filtrer par validation si demandé
         if (isVerifiedOnly) {
-          query = query.eq('is_verified', true);
+          params.append("verified", "true");
         }
         
-        // Filtrer par ville si spécifiée
         if (city && city !== 'all') {
-          query = query.eq('city', city);
+          params.append("city", city);
+        }
+        
+        if (params.toString()) {
+          url += `?${params.toString()}`;
         }
 
-        const { data, error } = await query;
-
-        if (error) {
-          throw error;
-        }
-
+        const { data } = await api.get(url);
         setPharmacies(data || []);
       } catch (err: any) {
         console.error('Erreur lors du chargement des pharmacies:', err);
@@ -69,16 +64,9 @@ export const usePharmacyDetails = (pharmacyId: string) => {
       setError(null);
 
       try {
-        const { data, error } = await supabase
-          .from('pharmacies')
-          .select('*, profiles(*)')
-          .eq('id', pharmacyId)
-          .single();
-
-        if (error) {
-          throw error;
-        }
-
+        if (!pharmacyId) return;
+        
+        const { data } = await api.get(`/pharmacies/${pharmacyId}`);
         setPharmacy(data);
       } catch (err: any) {
         console.error('Erreur lors du chargement des détails de la pharmacie:', err);

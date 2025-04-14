@@ -1,9 +1,9 @@
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
 import { Tables } from '@/types/supabase';
 import { useToast } from '@/components/ui/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
+import api from '@/services/api';
 
 export const useOrders = () => {
   const [orders, setOrders] = useState<Tables<'orders'>[]>([]);
@@ -20,16 +20,7 @@ export const useOrders = () => {
       setError(null);
 
       try {
-        const { data, error } = await supabase
-          .from('orders')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false });
-
-        if (error) {
-          throw error;
-        }
-
+        const { data } = await api.get('/orders');
         setOrders(data || []);
       } catch (err: any) {
         console.error('Erreur lors du chargement des commandes:', err);
@@ -72,33 +63,11 @@ export const useOrderDetails = (orderId: string) => {
 
       try {
         // Récupérer les informations de la commande
-        const { data: orderData, error: orderError } = await supabase
-          .from('orders')
-          .select('*')
-          .eq('id', orderId)
-          .single();
-
-        if (orderError) {
-          throw orderError;
-        }
-
-        // Vérifier que la commande appartient bien à l'utilisateur
-        if (orderData.user_id !== user.id) {
-          throw new Error('Vous n\'êtes pas autorisé à accéder à cette commande');
-        }
-
+        const { data: orderData } = await api.get(`/orders/${orderId}`);
         setOrder(orderData);
 
         // Récupérer les articles de la commande
-        const { data: itemsData, error: itemsError } = await supabase
-          .from('order_items')
-          .select('*, medicines(*), pharmacies(*)')
-          .eq('order_id', orderId);
-
-        if (itemsError) {
-          throw itemsError;
-        }
-
+        const { data: itemsData } = await api.get(`/orders/${orderId}/items`);
         setOrderItems(itemsData || []);
       } catch (err: any) {
         console.error('Erreur lors du chargement des détails de la commande:', err);
@@ -153,56 +122,22 @@ export const useCreateOrder = () => {
     setError(null);
 
     try {
-      // Calculer le montant total et les frais de livraison
-      const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-      const deliveryFee = deliveryMethod === 'delivery' ? 1000 : 0; // 1000 FCFA pour la livraison, 0 pour le retrait
-      const totalAmount = subtotal + deliveryFee;
+      const orderData = {
+        items: cartItems,
+        delivery_method: deliveryMethod,
+        delivery_address: deliveryAddress,
+        payment_method: paymentMethod,
+        notes: notes || null,
+      };
 
-      // Créer la commande
-      const { data: orderData, error: orderError } = await supabase
-        .from('orders')
-        .insert({
-          user_id: user.id,
-          status: 'pending',
-          total_amount: totalAmount,
-          payment_status: 'pending',
-          payment_method: paymentMethod,
-          delivery_method: deliveryMethod,
-          delivery_address: deliveryAddress,
-          delivery_fee: deliveryFee,
-          notes: notes || null,
-        })
-        .select()
-        .single();
-
-      if (orderError) {
-        throw orderError;
-      }
-
-      // Créer les articles de la commande
-      const orderItems = cartItems.map(item => ({
-        order_id: orderData.id,
-        medicine_id: item.id,
-        quantity: item.quantity,
-        price: item.price,
-        subtotal: item.price * item.quantity,
-        pharmacy_id: item.pharmacy_id,
-      }));
-
-      const { error: itemsError } = await supabase
-        .from('order_items')
-        .insert(orderItems);
-
-      if (itemsError) {
-        throw itemsError;
-      }
+      const { data } = await api.post('/orders', orderData);
 
       toast({
         title: 'Commande passée avec succès',
         description: 'Votre commande a été enregistrée et est en cours de traitement.',
       });
 
-      return { success: true, orderId: orderData.id };
+      return { success: true, orderId: data.id };
     } catch (err: any) {
       console.error('Erreur lors de la création de la commande:', err);
       setError(err.message);

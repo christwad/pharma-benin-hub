@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -12,7 +11,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
-import { supabase } from "@/lib/supabase";
+import api from "@/services/api";
 
 const PharmacySignupPage = () => {
   const { toast } = useToast();
@@ -63,26 +62,13 @@ const PharmacySignupPage = () => {
     }
 
     try {
-      // Utiliser l'email pour déclencher le processus de connexion avec OTP
-      const { data, error } = await supabase.auth.signInWithOtp({
+      const { data } = await api.post("/auth/send-otp", {
         email: googleEmail,
-        options: {
-          // Inclure les informations supplémentaires pour le profil
-          data: {
-            role: 'pharmacist',
-          }
-        }
+        role: 'pharmacist'
       });
 
-      if (error) {
-        throw error;
-      }
-
-      // Modifier cette partie pour ne pas essayer d'accéder à data.id qui n'existe pas
-      // Le message ID ou autre identifiant pourrait être stocké si nécessaire
-      if (data) {
-        // Stocker une chaîne vide ou une autre valeur si nécessaire
-        setVerificationId("pending_verification");
+      if (data && data.id) {
+        setVerificationId(data.id);
       }
 
       toast({
@@ -96,7 +82,7 @@ const PharmacySignupPage = () => {
       console.error("Erreur lors de l'envoi du code:", error);
       toast({
         title: "Erreur",
-        description: error.message || "Une erreur s'est produite lors de l'envoi du code",
+        description: error.response?.data?.message || "Une erreur s'est produite lors de l'envoi du code",
         variant: "destructive",
       });
     } finally {
@@ -108,16 +94,11 @@ const PharmacySignupPage = () => {
     setIsLoading(true);
 
     try {
-      // Vérifier le code OTP
-      const { data, error } = await supabase.auth.verifyOtp({
+      const { data } = await api.post("/auth/verify-otp", { 
         email: googleEmail,
-        token: verificationCode,
-        type: 'email'
+        code: verificationCode,
+        verification_id: verificationId
       });
-
-      if (error) {
-        throw error;
-      }
 
       console.log("Vérification réussie:", data);
       
@@ -132,7 +113,7 @@ const PharmacySignupPage = () => {
       console.error("Erreur lors de la vérification du code:", error);
       toast({
         title: "Code invalide",
-        description: error.message || "Le code de vérification est incorrect. Veuillez réessayer.",
+        description: error.response?.data?.message || "Le code de vérification est incorrect. Veuillez réessayer.",
         variant: "destructive",
       });
     } finally {
@@ -140,7 +121,6 @@ const PharmacySignupPage = () => {
     }
   };
 
-  // Affiche le formulaire pour saisir l'email Google
   if (showGoogleEmailForm) {
     return (
       <Layout>
@@ -190,7 +170,6 @@ const PharmacySignupPage = () => {
     );
   }
 
-  // Affiche le formulaire pour saisir le code de vérification
   if (showVerificationCode) {
     return (
       <Layout>
@@ -243,7 +222,6 @@ const PharmacySignupPage = () => {
     );
   }
 
-  // Si le formulaire a été soumis, afficher l'écran de confirmation
   if (formSubmitted) {
     return (
       <Layout>
@@ -319,7 +297,6 @@ const PharmacySignupPage = () => {
     );
   }
 
-  // Affichage principal de la page d'inscription
   return (
     <Layout>
       <div className="container mx-auto px-4 py-12">
@@ -419,7 +396,6 @@ const PharmacySignupPage = () => {
               <CardTitle>Inscription Pharmacie</CardTitle>
             </CardHeader>
             <CardContent>
-              {/* Option d'authentification Google */}
               <div className="mb-8">
                 <Button 
                   variant="outline" 

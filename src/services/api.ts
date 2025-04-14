@@ -1,6 +1,5 @@
 
 import axios from "axios";
-import { useToast } from "@/components/ui/use-toast";
 
 // Créer une instance axios avec la configuration de base
 const api = axios.create({
@@ -47,8 +46,6 @@ export default api;
 
 // Hook pour utiliser l'API avec les toasts
 export const useApi = () => {
-  const { toast } = useToast();
-
   const handleRequest = async <T,>(
     requestFn: () => Promise<{ data: T }>
   ): Promise<T | null> => {
@@ -60,11 +57,8 @@ export const useApi = () => {
       const errorMessage =
         error.response?.data?.message || "Une erreur est survenue";
       
-      toast({
-        title: "Erreur",
-        description: errorMessage,
-        variant: "destructive",
-      });
+      // Ici, utiliser une méthode de notification appropriée
+      console.error("Erreur:", errorMessage);
       
       return null;
     }

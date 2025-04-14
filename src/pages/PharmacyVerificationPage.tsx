@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
-import { supabase } from "@/lib/supabase";
+import api from "@/services/api";
 
 const PharmacyVerificationPage = () => {
   const [code, setCode] = useState("");
@@ -28,16 +28,11 @@ const PharmacyVerificationPage = () => {
     setIsVerifying(true);
     
     try {
-      // Vérifier le code OTP
-      const { data, error } = await supabase.auth.verifyOtp({
+      // Vérifier le code OTP via l'API
+      const { data } = await api.post("/auth/verify-otp", { 
         email,
-        token: code,
-        type: 'email'
+        code
       });
-
-      if (error) {
-        throw error;
-      }
 
       toast({
         title: "Vérification réussie",
@@ -50,7 +45,7 @@ const PharmacyVerificationPage = () => {
       console.error("Erreur de vérification:", error);
       toast({
         title: "Code invalide",
-        description: error.message || "Le code de vérification que vous avez saisi est incorrect. Veuillez réessayer.",
+        description: error.response?.data?.message || "Le code de vérification que vous avez saisi est incorrect. Veuillez réessayer.",
         variant: "destructive",
       });
     } finally {
@@ -69,12 +64,8 @@ const PharmacyVerificationPage = () => {
     }
 
     try {
-      const { error } = await supabase.auth.signInWithOtp({
-        email
-      });
-
-      if (error) throw error;
-
+      const { data } = await api.post("/auth/resend-otp", { email });
+      
       toast({
         title: "Code renvoyé",
         description: "Un nouveau code de vérification a été envoyé à votre adresse email.",
@@ -82,7 +73,7 @@ const PharmacyVerificationPage = () => {
     } catch (error: any) {
       toast({
         title: "Erreur",
-        description: error.message || "Une erreur s'est produite lors de l'envoi du code",
+        description: error.response?.data?.message || "Une erreur s'est produite lors de l'envoi du code",
         variant: "destructive",
       });
     }

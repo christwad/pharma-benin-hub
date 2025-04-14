@@ -1,8 +1,8 @@
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
 import { Tables } from '@/types/supabase';
 import { useToast } from '@/components/ui/use-toast';
+import api from '@/services/api';
 
 export const useMedicines = (pharmacyId?: string, category?: string) => {
   const [medicines, setMedicines] = useState<Tables<'medicines'>[]>([]);
@@ -16,26 +16,22 @@ export const useMedicines = (pharmacyId?: string, category?: string) => {
       setError(null);
 
       try {
-        let query = supabase
-          .from('medicines')
-          .select('*');
+        let url = "/medicines";
+        const params = new URLSearchParams();
         
-        // Filtrer par pharmacie si spécifié
         if (pharmacyId) {
-          query = query.eq('pharmacy_id', pharmacyId);
+          params.append("pharmacy_id", pharmacyId);
         }
         
-        // Filtrer par catégorie si spécifiée
         if (category && category !== 'all') {
-          query = query.eq('category', category);
+          params.append("category", category);
+        }
+        
+        if (params.toString()) {
+          url += `?${params.toString()}`;
         }
 
-        const { data, error } = await query;
-
-        if (error) {
-          throw error;
-        }
-
+        const { data } = await api.get(url);
         setMedicines(data || []);
       } catch (err: any) {
         console.error('Erreur lors du chargement des médicaments:', err);
@@ -68,16 +64,9 @@ export const useMedicineDetails = (medicineId: string) => {
       setError(null);
 
       try {
-        const { data, error } = await supabase
-          .from('medicines')
-          .select('*, pharmacies(*)')
-          .eq('id', medicineId)
-          .single();
-
-        if (error) {
-          throw error;
-        }
-
+        if (!medicineId) return;
+        
+        const { data } = await api.get(`/medicines/${medicineId}`);
         setMedicine(data);
       } catch (err: any) {
         console.error('Erreur lors du chargement des détails du médicament:', err);
