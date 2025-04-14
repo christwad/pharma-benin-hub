@@ -11,6 +11,8 @@ import { CheckSquare, Building2, Users, TrendingUp, HeartHandshake, User, ArrowR
 import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
+import { supabase } from "@/lib/supabase";
 
 const PharmacySignupPage = () => {
   const { toast } = useToast();
@@ -18,6 +20,12 @@ const PharmacySignupPage = () => {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [verificationMethod, setVerificationMethod] = useState("email");
   const [isGoogleAuth, setIsGoogleAuth] = useState(false);
+  const [googleEmail, setGoogleEmail] = useState("");
+  const [showGoogleEmailForm, setShowGoogleEmailForm] = useState(false);
+  const [showVerificationCode, setShowVerificationCode] = useState(false);
+  const [verificationCode, setVerificationCode] = useState("");
+  const [verificationId, setVerificationId] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,21 +45,201 @@ const PharmacySignupPage = () => {
   };
 
   const handleGoogleAuth = () => {
-    toast({
-      title: "Authentification avec Google",
-      description: "Redirection vers l'authentification Google...",
-    });
+    setShowGoogleEmailForm(true);
+  };
+
+  const handleGoogleEmailSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
     
-    // Simuler une authentification Google réussie
-    setTimeout(() => {
+    if (!googleEmail || !googleEmail.includes('@')) {
+      toast({
+        title: "Adresse email invalide",
+        description: "Veuillez entrer une adresse email valide",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      // Utiliser l'email pour déclencher le processus de connexion avec OTP
+      const { data, error } = await supabase.auth.signInWithOtp({
+        email: googleEmail,
+        options: {
+          // Inclure les informations supplémentaires pour le profil
+          data: {
+            role: 'pharmacist',
+          }
+        }
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      // Stocker l'identifiant de vérification (pourrait être utile pour certaines implémentations)
+      if (data) {
+        setVerificationId(data?.id || "");
+      }
+
+      toast({
+        title: "Code de vérification envoyé",
+        description: `Un code de vérification a été envoyé à ${googleEmail}`,
+      });
+
+      setShowVerificationCode(true);
+      setShowGoogleEmailForm(false);
+    } catch (error: any) {
+      console.error("Erreur lors de l'envoi du code:", error);
+      toast({
+        title: "Erreur",
+        description: error.message || "Une erreur s'est produite lors de l'envoi du code",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleVerifyCode = async () => {
+    setIsLoading(true);
+
+    try {
+      // Vérifier le code OTP
+      const { data, error } = await supabase.auth.verifyOtp({
+        email: googleEmail,
+        token: verificationCode,
+        type: 'email'
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      console.log("Vérification réussie:", data);
+      
       setIsGoogleAuth(true);
       setFormSubmitted(true);
+      
       toast({
         title: "Authentification réussie",
-        description: "Votre compte Google a été authentifié avec succès.",
+        description: "Votre identité a été vérifiée avec succès.",
       });
-    }, 1500);
+    } catch (error: any) {
+      console.error("Erreur lors de la vérification du code:", error);
+      toast({
+        title: "Code invalide",
+        description: error.message || "Le code de vérification est incorrect. Veuillez réessayer.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  // Affiche le formulaire pour saisir l'email Google
+  if (showGoogleEmailForm) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-12">
+          <div className="max-w-md mx-auto">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-center">Authentification avec Google</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <form onSubmit={handleGoogleEmailSubmit} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="google-email">Entrez votre adresse email Google</Label>
+                    <Input
+                      id="google-email"
+                      type="email"
+                      placeholder="votre.email@gmail.com"
+                      value={googleEmail}
+                      onChange={(e) => setGoogleEmail(e.target.value)}
+                      required
+                    />
+                  </div>
+                  
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-benin-green hover:bg-benin-green/90"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? "Envoi en cours..." : "Envoyer le code de vérification"}
+                  </Button>
+                </form>
+                
+                <div className="text-center">
+                  <Button 
+                    variant="link" 
+                    onClick={() => setShowGoogleEmailForm(false)}
+                    className="text-sm text-gray-600"
+                  >
+                    Retour à l'inscription
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  // Affiche le formulaire pour saisir le code de vérification
+  if (showVerificationCode) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-12">
+          <div className="max-w-md mx-auto">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-center">Vérification du code</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="text-center">
+                  <p className="mb-4">Nous avons envoyé un code de vérification à <span className="font-medium">{googleEmail}</span></p>
+                </div>
+                
+                <div className="flex justify-center my-6">
+                  <InputOTP maxLength={6} value={verificationCode} onChange={setVerificationCode}>
+                    <InputOTPGroup>
+                      <InputOTPSlot index={0} />
+                      <InputOTPSlot index={1} />
+                      <InputOTPSlot index={2} />
+                      <InputOTPSlot index={3} />
+                      <InputOTPSlot index={4} />
+                      <InputOTPSlot index={5} />
+                    </InputOTPGroup>
+                  </InputOTP>
+                </div>
+                
+                <Button 
+                  className="w-full bg-benin-green hover:bg-benin-green/90"
+                  onClick={handleVerifyCode}
+                  disabled={isLoading || verificationCode.length !== 6}
+                >
+                  {isLoading ? "Vérification en cours..." : "Vérifier le code"}
+                </Button>
+                
+                <div className="text-center">
+                  <Button 
+                    variant="link" 
+                    onClick={() => setShowGoogleEmailForm(true)}
+                    className="text-sm text-gray-600"
+                  >
+                    Utiliser une autre adresse email
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   // Si le formulaire a été soumis, afficher l'écran de confirmation
   if (formSubmitted) {
@@ -129,6 +317,7 @@ const PharmacySignupPage = () => {
     );
   }
 
+  // Affichage principal de la page d'inscription
   return (
     <Layout>
       <div className="container mx-auto px-4 py-12">

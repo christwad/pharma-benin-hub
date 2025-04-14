@@ -6,45 +6,86 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
+import { supabase } from "@/lib/supabase";
 
 const PharmacyVerificationPage = () => {
   const [code, setCode] = useState("");
+  const [email, setEmail] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const handleVerify = () => {
-    // Simuler le processus de vérification
+  const handleVerify = async () => {
+    if (!email || !code) {
+      toast({
+        title: "Informations manquantes",
+        description: "Veuillez entrer votre email et le code de vérification",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsVerifying(true);
     
-    // Simuler un délai pour l'API
-    setTimeout(() => {
-      setIsVerifying(false);
-      
-      // Pour démonstration, acceptons n'importe quel code à 6 chiffres
-      if (code.length === 6) {
-        toast({
-          title: "Vérification réussie",
-          description: "Votre identité a été vérifiée. Votre demande est maintenant en attente d'approbation par notre équipe.",
-        });
-        
-        // Rediriger vers une page de confirmation après vérification
-        navigate("/pharmacy-verification-success");
-      } else {
-        toast({
-          title: "Code invalide",
-          description: "Le code de vérification que vous avez saisi est incorrect. Veuillez réessayer.",
-          variant: "destructive",
-        });
+    try {
+      // Vérifier le code OTP
+      const { data, error } = await supabase.auth.verifyOtp({
+        email,
+        token: code,
+        type: 'email'
+      });
+
+      if (error) {
+        throw error;
       }
-    }, 1500);
+
+      toast({
+        title: "Vérification réussie",
+        description: "Votre identité a été vérifiée. Votre demande est maintenant en attente d'approbation par notre équipe.",
+      });
+      
+      // Rediriger vers une page de confirmation après vérification
+      navigate("/pharmacy-verification-success");
+    } catch (error: any) {
+      console.error("Erreur de vérification:", error);
+      toast({
+        title: "Code invalide",
+        description: error.message || "Le code de vérification que vous avez saisi est incorrect. Veuillez réessayer.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsVerifying(false);
+    }
   };
 
-  const handleResendCode = () => {
-    toast({
-      title: "Code renvoyé",
-      description: "Un nouveau code de vérification a été envoyé.",
-    });
+  const handleResendCode = async () => {
+    if (!email) {
+      toast({
+        title: "Email requis",
+        description: "Veuillez entrer votre adresse email pour recevoir un nouveau code",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        email
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Code renvoyé",
+        description: "Un nouveau code de vérification a été envoyé à votre adresse email.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Erreur",
+        description: error.message || "Une erreur s'est produite lors de l'envoi du code",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -59,6 +100,19 @@ const PharmacyVerificationPage = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
+              <div className="space-y-2">
+                <label htmlFor="email" className="text-sm font-medium">Adresse email</label>
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full p-2 border rounded"
+                  placeholder="votre.email@example.com"
+                  required
+                />
+              </div>
+              
               <div className="flex justify-center my-6">
                 <InputOTP maxLength={6} value={code} onChange={setCode}>
                   <InputOTPGroup>
@@ -75,7 +129,7 @@ const PharmacyVerificationPage = () => {
               <Button 
                 className="w-full bg-benin-green hover:bg-benin-green/90"
                 onClick={handleVerify}
-                disabled={isVerifying || code.length !== 6}
+                disabled={isVerifying || code.length !== 6 || !email}
               >
                 {isVerifying ? "Vérification en cours..." : "Vérifier"}
               </Button>
@@ -86,6 +140,7 @@ const PharmacyVerificationPage = () => {
                   variant="link" 
                   className="text-benin-green"
                   onClick={handleResendCode}
+                  disabled={!email}
                 >
                   Renvoyer le code
                 </Button>
